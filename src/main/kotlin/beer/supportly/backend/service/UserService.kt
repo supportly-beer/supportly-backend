@@ -4,10 +4,8 @@ import beer.supportly.backend.database.entities.UserEntity
 import beer.supportly.backend.database.repositories.RoleRepository
 import beer.supportly.backend.database.repositories.UserRepository
 import beer.supportly.backend.dto.CreateUserDto
-import beer.supportly.backend.dto.UserDto
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
 
 @Service
 @Transactional
@@ -15,7 +13,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository
 ) {
-    fun createUser(createUserDto: CreateUserDto): UserDto {
+    fun createUser(createUserDto: CreateUserDto) {
         val foundUser = userRepository.findByEmail(createUserDto.email)
 
         if (foundUser.isPresent) {
@@ -36,5 +34,7 @@ class UserService(
             createUserDto.profilePictureUrl,
             roleEntity.get()
         )
+
+        userRepository.save(userEntity)
     }
 }

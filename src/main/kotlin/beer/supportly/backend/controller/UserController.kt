@@ -1,7 +1,7 @@
 package beer.supportly.backend.controller
 
 import beer.supportly.backend.dto.CreateUserDto
-import beer.supportly.backend.dto.UserDto
+import beer.supportly.backend.dto.OperationSuccessDto
 import beer.supportly.backend.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,7 +16,8 @@ class UserController(
 ) {
 
     @PostMapping
-    fun createUser(@RequestBody createUserDto: CreateUserDto): ResponseEntity<UserDto> {
-        return ResponseEntity.ok(userService.createUser(createUserDto))
+    fun createUser(@RequestBody createUserDto: CreateUserDto): ResponseEntity<OperationSuccessDto> {
+        userService.createUser(createUserDto)
+        return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
 }
