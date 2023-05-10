@@ -15,7 +15,7 @@ data class UserEntity(
     val profilePictureUrl: String,
 
     @ManyToOne
-    val roleEntity: RoleEntity
+    val role: RoleEntity
 ) {
     constructor() : this(null, "", "", "", "", "", RoleEntity())
     constructor(
@@ -24,6 +24,6 @@ data class UserEntity(
         lastName: String,
         password: String,
         profilePictureUrl: String,
-        roleEntity: RoleEntity
-    ) : this(null, email, firstName, lastName, password, profilePictureUrl, roleEntity)
+        role: RoleEntity
+    ) : this(null, email, firstName, lastName, password, profilePictureUrl, role)
 }
