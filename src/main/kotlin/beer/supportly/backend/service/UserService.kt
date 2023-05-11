@@ -6,7 +6,9 @@ import beer.supportly.backend.database.repositories.UserRepository
 import beer.supportly.backend.dto.CreateUserDto
 import beer.supportly.backend.dto.UserDto
 import beer.supportly.backend.dto.mapper.UserDtoMapper
+import beer.supportly.backend.exception.BackendException
 import jakarta.transaction.Transactional
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
@@ -20,13 +22,13 @@ class UserService(
         val foundUser = userRepository.findByEmail(createUserDto.email)
 
         if (foundUser.isPresent) {
-            throw RuntimeException("User already exists!")
+            throw BackendException(HttpStatus.BAD_REQUEST, "User already exists!")
         }
 
         val roleEntity = roleRepository.findByName("ROLE_USER")
 
         if (!roleEntity.isPresent) {
-            throw RuntimeException("Role does not exist!")
+            throw BackendException(HttpStatus.NOT_FOUND, "Role does not exist!")
         }
 
         val userEntity = UserEntity(
@@ -48,7 +50,7 @@ class UserService(
     fun getUser(userId: Long): UserDto {
         return userRepository.findById(userId)
             .map(userDtoMapper)
-            .orElseThrow { RuntimeException("User not found!") }
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
     }
 
     fun getUserCount(): Long {

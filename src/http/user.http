@@ -1,5 +1,5 @@
 ### Get a user
-GET {{apiUrl}}/user/1
+GET {{apiUrl}}/user/2
 
 ### Create a user
 POST {{apiUrl}}/user
