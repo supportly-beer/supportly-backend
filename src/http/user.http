@@ -1,0 +1,14 @@
+### Get a user
+GET {{apiUrl}}/user/1
+
+### Create a user
+POST {{apiUrl}}/user
+Content-Type: application/json
+
+{
+  "email": "test@supportly.beer",
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "password": "Abcdefg",
+  "profilePictureUrl": "https://picture.url"
+}

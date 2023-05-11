@@ -15,6 +15,11 @@ data class UserEntity(
     val profilePictureUrl: String,
 
     @ManyToOne
+    @JoinTable(
+        name = "roles_to_user",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "role_id")]
+    )
     val role: RoleEntity
 ) {
     constructor() : this(null, "", "", "", "", "", RoleEntity())
