@@ -47,7 +47,7 @@ class DefaultDataGenerator(
                 email,
                 "max",
                 "mustermann",
-                "admin",
+                randomPassword,
                 "https://random.shit",
                 adminRole
             )

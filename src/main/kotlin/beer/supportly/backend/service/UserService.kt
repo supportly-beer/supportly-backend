@@ -7,8 +7,10 @@ import beer.supportly.backend.dto.CreateUserDto
 import beer.supportly.backend.dto.UserDto
 import beer.supportly.backend.dto.mapper.UserDtoMapper
 import beer.supportly.backend.exception.BackendException
+import beer.supportly.backend.security.service.JwtService
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,7 +18,9 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
-    private val userDtoMapper: UserDtoMapper
+    private val userDtoMapper: UserDtoMapper,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtService: JwtService
 ) {
     fun createUser(createUserDto: CreateUserDto) {
         val foundUser = userRepository.findByEmail(createUserDto.email)
@@ -44,11 +48,20 @@ class UserService(
     }
 
     fun saveUser(userEntity: UserEntity) {
-        userRepository.save(userEntity.copy(password = userEntity.password)) // TODO: HASH PASSWORD
+        userRepository.save(userEntity.copy(userPassword = passwordEncoder.encode(userEntity.password)))
     }
 
     fun getUser(userId: Long): UserDto {
         return userRepository.findById(userId)
+            .map(userDtoMapper)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+    }
+
+    fun getUserFromToken(jwt: String): UserDto {
+        val email = jwtService.extractEmail(jwt)
+            ?: throw BackendException(HttpStatus.BAD_REQUEST, "Invalid token signature")
+
+        return userRepository.findByEmail(email)
             .map(userDtoMapper)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
     }

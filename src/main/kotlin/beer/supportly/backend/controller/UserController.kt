@@ -13,6 +13,11 @@ class UserController(
     private val userService: UserService
 ) {
 
+    @GetMapping
+    fun getUser(@RequestHeader("Authorization") token: String): ResponseEntity<UserDto> {
+        return ResponseEntity.ok(userService.getUserFromToken(token.substring("Bearer ".length)))
+    }
+
     @GetMapping("{userId}")
     fun getUser(@PathVariable("userId") userId: Long): ResponseEntity<UserDto> {
         return ResponseEntity.ok(userService.getUser(userId))
