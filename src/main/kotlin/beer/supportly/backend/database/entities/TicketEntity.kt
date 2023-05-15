@@ -14,7 +14,7 @@ data class TicketEntity(
     val closedAt: Long,
     val updatedAt: Long,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
         name = "ticket_to_creator",
         joinColumns = [JoinColumn(name = "ticket_id")],
@@ -22,7 +22,7 @@ data class TicketEntity(
     )
     val creator: UserEntity,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
         name = "ticket_to_assignee",
         joinColumns = [JoinColumn(name = "ticket_id")],

@@ -20,7 +20,7 @@ data class UserEntity(
     val twofaCode: String,
     val twofaEnabled: Boolean,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
         name = "roles_to_user",
         joinColumns = [JoinColumn(name = "user_id")],
