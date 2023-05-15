@@ -16,9 +16,9 @@ POST {{apiUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@supportly.beer",
-  "firstName": "Max",
-  "lastName": "Mustermann",
-  "password": "Abcdefg",
+  "email": "test1@supportly.beer",
+  "firstName": "Cooler",
+  "lastName": "Typ",
+  "password": "12345678",
   "profilePictureUrl": "https://picture.url"
 }

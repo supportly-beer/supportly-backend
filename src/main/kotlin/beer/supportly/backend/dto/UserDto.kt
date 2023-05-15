@@ -6,5 +6,6 @@ data class UserDto(
     val firstName: String,
     val lastName: String,
     val profilePictureUrl: String,
+    val twofaEnabled: Boolean,
     val role: RoleDto
 )

@@ -41,6 +41,8 @@ class UserService(
             createUserDto.lastName,
             createUserDto.password,
             createUserDto.profilePictureUrl,
+            "not_set",
+            false,
             roleEntity.get()
         )
 

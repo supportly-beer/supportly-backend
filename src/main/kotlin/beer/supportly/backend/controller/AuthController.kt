@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/auth")
 class AuthController(
     private val userService: UserService,

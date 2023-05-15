@@ -2,6 +2,7 @@ package beer.supportly.backend.database.entities
 
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
@@ -16,6 +17,9 @@ data class UserEntity(
     val userPassword: String,
     val profilePictureUrl: String,
 
+    val twofaCode: String,
+    val twofaEnabled: Boolean,
+
     @ManyToOne
     @JoinTable(
         name = "roles_to_user",
@@ -24,17 +28,21 @@ data class UserEntity(
     )
     val role: RoleEntity
 ) : UserDetails {
-    constructor() : this(null, "", "", "", "", "", RoleEntity())
+    constructor() : this(null, "", "", "", "", "", "", false, RoleEntity())
     constructor(
         email: String,
         firstName: String,
         lastName: String,
         userPassword: String,
         profilePictureUrl: String,
+        twofaCode: String,
+        twofaEnabled: Boolean,
         role: RoleEntity
-    ) : this(null, email, firstName, lastName, userPassword, profilePictureUrl, role)
+    ) : this(null, email, firstName, lastName, userPassword, profilePictureUrl, twofaCode, twofaEnabled, role)
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+        return mutableListOf(SimpleGrantedAuthority(this.role.name))
+    }
     override fun getPassword(): String = this.userPassword
     override fun getUsername(): String = this.email
     override fun isAccountNonExpired(): Boolean = true
