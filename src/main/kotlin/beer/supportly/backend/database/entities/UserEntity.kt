@@ -17,8 +17,8 @@ data class UserEntity(
     val userPassword: String,
     val profilePictureUrl: String,
 
-    val twofaCode: String,
-    val twofaEnabled: Boolean,
+    var twofaCode: String,
+    var twofaEnabled: Boolean,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
@@ -43,6 +43,7 @@ data class UserEntity(
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf(SimpleGrantedAuthority(this.role.name))
     }
+
     override fun getPassword(): String = this.userPassword
     override fun getUsername(): String = this.email
     override fun isAccountNonExpired(): Boolean = true

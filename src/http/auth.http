@@ -4,11 +4,12 @@ Content-Type: application/json
 
 {
   "email": "admin@example.com",
-  "password": "DExc2OLmWOT4Rk2"
+  "password": "uSvnNttFPzyspMI"
 }
 
 > {%
  client.global.set("accessToken", response.body.accessToken)
+ client.global.set("token", response.body.token)
 %}
 
 ### Create a user
@@ -16,9 +17,19 @@ POST {{apiUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "email": "test1@supportly.beer",
-  "firstName": "Cooler",
-  "lastName": "Typ",
+  "email": "schurli@supportly.beer",
+  "firstName": "Schurli",
+  "lastName": "Yeeterich",
   "password": "12345678",
   "profilePictureUrl": "https://picture.url"
+}
+
+### Verify twofa
+POST {{apiUrl}}/auth/twofa
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "admin@example.com",
+  "token": "101857"
 }

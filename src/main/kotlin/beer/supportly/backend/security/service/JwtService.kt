@@ -13,7 +13,8 @@ import java.util.*
 @Service
 class JwtService {
 
-    private val secret = "294A404E635266556A586E3272357538782F413F4428472D4B6150645367566B5970337336763979244226452948404D6251655468576D5A7134743777217A25"
+    private val secret =
+        "294A404E635266556A586E3272357538782F413F4428472D4B6150645367566B5970337336763979244226452948404D6251655468576D5A7134743777217A25"
 
     fun isTokenValid(jwt: String, userDetails: UserDetails): Boolean {
         return (this.extractEmail(jwt) == userDetails.username) && !this.isTokenExpired(jwt)

@@ -1,9 +1,6 @@
 package beer.supportly.backend.controller
 
-import beer.supportly.backend.dto.CreateUserDto
-import beer.supportly.backend.dto.LoginDto
-import beer.supportly.backend.dto.OperationSuccessDto
-import beer.supportly.backend.dto.TokenDto
+import beer.supportly.backend.dto.*
 import beer.supportly.backend.service.AuthService
 import beer.supportly.backend.service.UserService
 import org.springframework.http.ResponseEntity
@@ -21,7 +18,12 @@ class AuthController(
         return ResponseEntity.ok(authService.login(loginDto))
     }
 
-    @PostMapping("/validate")
+    @PostMapping("/twofa")
+    fun twofa(@RequestBody twofaDto: TwofaDto): ResponseEntity<TokenDto> {
+        return ResponseEntity.ok(authService.twofa(twofaDto))
+    }
+
+    @GetMapping("/validate")
     fun validate(@RequestHeader("Authorization") token: String): ResponseEntity<OperationSuccessDto> {
         return ResponseEntity.ok(authService.validate(token.substring("Bearer ".length)))
     }

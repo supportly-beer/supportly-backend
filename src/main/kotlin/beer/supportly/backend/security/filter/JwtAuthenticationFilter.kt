@@ -2,6 +2,8 @@ package beer.supportly.backend.security.filter
 
 import beer.supportly.backend.exception.BackendException
 import beer.supportly.backend.security.service.JwtService
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.jsonwebtoken.MalformedJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+
 
 @Component
 class JwtAuthenticationFilter(
@@ -38,22 +41,32 @@ class JwtAuthenticationFilter(
             throw BackendException(HttpStatus.BAD_REQUEST, "No token provided for auth required route")
         }
 
-        val email = jwtService.extractEmail(jwt)
+        try {
+            val email = jwtService.extractEmail(jwt)
 
-        if (email != null && SecurityContextHolder.getContext().authentication == null) {
-            val userEntity = userDetailsService.loadUserByUsername(email)
+            if (email != null && SecurityContextHolder.getContext().authentication == null) {
+                val userEntity = userDetailsService.loadUserByUsername(email)
 
-            if (jwtService.isTokenValid(jwt, userEntity)) {
-                val usernamePasswordAuthenticationToken =
-                    UsernamePasswordAuthenticationToken(userEntity, null, userEntity.authorities)
+                if (jwtService.isTokenValid(jwt, userEntity)) {
+                    val usernamePasswordAuthenticationToken =
+                        UsernamePasswordAuthenticationToken(userEntity, null, userEntity.authorities)
 
-                usernamePasswordAuthenticationToken.details =
-                    WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
+                    usernamePasswordAuthenticationToken.details =
+                        WebAuthenticationDetailsSource().buildDetails(httpServletRequest)
 
-                SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+                    SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+                }
             }
-        }
 
-        filterChain.doFilter(httpServletRequest, httpServletResponse)
+            filterChain.doFilter(httpServletRequest, httpServletResponse)
+        } catch (e: MalformedJwtException) {
+            val backendException = BackendException(HttpStatus.UNAUTHORIZED, e.message.orEmpty())
+            httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()
+            httpServletResponse.writer.write(convertObjectToJson(backendException))
+        }
+    }
+
+    fun convertObjectToJson(value: Any): String {
+        return ObjectMapper().writeValueAsString(value)
     }
 }

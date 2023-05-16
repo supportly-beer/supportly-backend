@@ -4,3 +4,7 @@ Authorization: Bearer {{accessToken}}
 
 ### Get a user by id
 GET {{apiUrl}}/user/2
+
+### Generate QR Code for Two Factor
+POST {{apiUrl}}/user/enableTwofa
+Authorization: Bearer {{accessToken}}

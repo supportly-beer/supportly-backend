@@ -2,6 +2,7 @@ package beer.supportly.backend.controller
 
 import beer.supportly.backend.dto.CreateUserDto
 import beer.supportly.backend.dto.OperationSuccessDto
+import beer.supportly.backend.dto.TwofaEnabledDto
 import beer.supportly.backend.dto.UserDto
 import beer.supportly.backend.service.UserService
 import org.springframework.http.ResponseEntity
@@ -27,5 +28,10 @@ class UserController(
     fun createUser(@RequestBody createUserDto: CreateUserDto): ResponseEntity<OperationSuccessDto> {
         userService.createUser(createUserDto)
         return ResponseEntity.ok(OperationSuccessDto(true, null))
+    }
+
+    @PostMapping("/enableTwofa")
+    fun enableTwofa(@RequestHeader("Authorization") token: String): ResponseEntity<TwofaEnabledDto> {
+        return ResponseEntity.ok(userService.enableTwofa(token.substring("Bearer ".length)))
     }
 }

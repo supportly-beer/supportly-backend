@@ -26,6 +26,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    implementation("com.google.zxing:core:3.5.1")
+    implementation("com.google.zxing:javase:3.5.1")
+    implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.11.5")
     implementation(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.11.5")
     implementation(group = "io.jsonwebtoken", name = "jjwt-jackson", version = "0.11.5")
