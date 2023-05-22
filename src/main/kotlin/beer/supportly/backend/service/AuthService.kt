@@ -30,17 +30,21 @@ class AuthService(
 
         if (userEntity.twofaEnabled) {
             val twoFaToken = jwtService.generateToken(
-                mapOf("id" to userEntity.id!!), userEntity, Date(System.currentTimeMillis() + (1000 * 60 * 1))
+                mapOf("id" to userEntity.id!!, "type" to "twofa"),
+                userEntity,
+                Date(System.currentTimeMillis() + (1000 * 60 * 1))
             )
 
             throw TwofaRequiredException("twofa_required", twoFaToken)
         }
 
         val accessToken = jwtService.generateToken(
-            mapOf("id" to userEntity.id!!), userEntity, Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14))
+            mapOf("id" to userEntity.id!!, "type" to "access"),
+            userEntity,
+            Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14))
         )
 
-        return TokenDto(accessToken)
+        return TokenDto("success", accessToken)
     }
 
     fun validate(token: String): OperationSuccessDto {
@@ -65,9 +69,11 @@ class AuthService(
         }
 
         val accessToken = jwtService.generateToken(
-            mapOf("id" to userEntity.id!!), userEntity, Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14))
+            mapOf("id" to userEntity.id!!, "type" to "access"),
+            userEntity,
+            Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14))
         )
 
-        return TokenDto(accessToken)
+        return TokenDto("success", accessToken)
     }
 }

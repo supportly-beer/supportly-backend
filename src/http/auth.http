@@ -8,8 +8,7 @@ Content-Type: application/json
 }
 
 > {%
- client.global.set("accessToken", response.body.accessToken)
- client.global.set("token", response.body.token)
+    client.global.set("token", response.body.token)
 %}
 
 ### Create a user

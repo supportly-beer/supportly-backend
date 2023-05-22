@@ -1,7 +1,7 @@
 package beer.supportly.backend.exception.mapper
 
 import beer.supportly.backend.dto.OperationSuccessDto
-import beer.supportly.backend.dto.TwofaRequiredDto
+import beer.supportly.backend.dto.TokenDto
 import beer.supportly.backend.exception.BackendException
 import beer.supportly.backend.exception.TwofaRequiredException
 import jakarta.servlet.http.HttpServletRequest
@@ -25,8 +25,8 @@ class ExceptionMapper {
     fun handleTwofaRequiredException(
         twoFaRequiredException: TwofaRequiredException,
         httpServletRequest: HttpServletRequest
-    ): ResponseEntity<TwofaRequiredDto> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(TwofaRequiredDto(twoFaRequiredException.message.orEmpty(), twoFaRequiredException.token))
+    ): ResponseEntity<TokenDto> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(TokenDto(twoFaRequiredException.message.orEmpty(), twoFaRequiredException.twofaToken))
     }
 }
