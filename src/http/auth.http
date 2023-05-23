@@ -3,8 +3,8 @@ POST {{apiUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@example.com",
-  "password": "uSvnNttFPzyspMI"
+  "email": "user@example.com",
+  "password": "12345678"
 }
 
 > {%
@@ -16,11 +16,11 @@ POST {{apiUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "email": "schurli@supportly.beer",
+  "email": "user@example.com",
   "firstName": "Schurli",
   "lastName": "Yeeterich",
   "password": "12345678",
-  "profilePictureUrl": "https://picture.url"
+  "profilePictureUrl": "https://media.istockphoto.com/id/1200677760/photo/portrait-of-handsome-smiling-young-man-with-crossed-arms.jpg?s=612x612&w=0&k=20&c=g_ZmKDpK9VEEzWw4vJ6O577ENGLTOcrvYeiLxi8mVuo="
 }
 
 ### Verify twofa

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package beer.supportly.protochat;
+
+import "google/protobuf/empty.proto";
+
+message ChatMessage {
+  string roomId = 1;
+  string sender = 2;
+  string message = 3;
+  string timestamp = 4;
+}
+
+message ChatRoom {
+  string id = 1;
+  string name = 2;
+}
+
+message JoinRoomRequest {
+  string roomId = 1;
+  string userId = 2;
+  string username = 3;
+}
+
+service ChatService {
+  rpc JoinChatRoom(JoinRoomRequest) returns (stream ChatMessage);
+  rpc SendMessage(ChatMessage) returns (google.protobuf.Empty);
+  rpc GetChatRoomList(google.protobuf.Empty) returns (stream ChatRoom);
+}

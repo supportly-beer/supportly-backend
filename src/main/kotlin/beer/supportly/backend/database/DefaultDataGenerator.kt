@@ -48,7 +48,7 @@ class DefaultDataGenerator(
                 "max",
                 "mustermann",
                 randomPassword,
-                "https://random.shit",
+                "https://media.istockphoto.com/id/1200677760/photo/portrait-of-handsome-smiling-young-man-with-crossed-arms.jpg?s=612x612&w=0&k=20&c=g_ZmKDpK9VEEzWw4vJ6O577ENGLTOcrvYeiLxi8mVuo=",
                 "not_set",
                 false,
                 adminRole
@@ -56,16 +56,16 @@ class DefaultDataGenerator(
 
             userService.saveUser(adminUser)
 
-            logger.info("########################################################################");
-            logger.info("                                                                        ");
-            logger.info("Created new default user with super administrator permissions!");
-            logger.info("                                                                        ");
-            logger.info("    Email: $email");
-            logger.info("    Password: $randomPassword");
-            logger.info("                                                                        ");
-            logger.info("Please save these credentials! You will never see them again!");
-            logger.info("                                                                        ");
-            logger.info("########################################################################");
+            logger.info("########################################################################")
+            logger.info("                                                                        ")
+            logger.info("Created new default user with super administrator permissions!")
+            logger.info("                                                                        ")
+            logger.info("    Email: $email")
+            logger.info("    Password: $randomPassword")
+            logger.info("                                                                        ")
+            logger.info("Please save these credentials! You will never see them again!")
+            logger.info("                                                                        ")
+            logger.info("########################################################################")
         }
     }
 }
