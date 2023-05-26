@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 @Transactional
@@ -27,11 +28,7 @@ class UserService(
 ) {
 
     fun enableTwofa(jwt: String): TwofaEnabledDto {
-        val email = jwtService.extractEmail(jwt)
-            ?: throw BackendException(HttpStatus.BAD_REQUEST, "Invalid token signature")
-
-        val userEntity = userRepository.findByEmail(email)
-            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+        val userEntity = this.getOriginalUserFromToken(jwt)
 
         if (userEntity.twofaEnabled) {
             throw BackendException(HttpStatus.BAD_REQUEST, "Twofa already enabled!")
@@ -42,7 +39,7 @@ class UserService(
         userEntity.twofaCode = secret
         userEntity.twofaEnabled = true
 
-        val qrCode = QrCodeUtils.generateQrCode(email, secret)
+        val qrCode = QrCodeUtils.generateQrCode(userEntity.email, secret)
 
         return TwofaEnabledDto(qrCode)
     }
@@ -79,17 +76,25 @@ class UserService(
     }
 
     fun getUser(userId: Long): UserDto {
-        return userRepository.findById(userId)
+        return Optional.of(this.getOriginalUser(userId))
             .map(userDtoMapper)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
     }
 
+    fun getOriginalUser(userId: Long): UserEntity {
+        return userRepository.findById(userId).orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+    }
+
     fun getUserFromToken(jwt: String): UserDto {
+        return Optional.of(this.getOriginalUserFromToken(jwt)).map(userDtoMapper)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+    }
+
+    fun getOriginalUserFromToken(jwt: String): UserEntity {
         val email = jwtService.extractEmail(jwt)
             ?: throw BackendException(HttpStatus.BAD_REQUEST, "Invalid token signature")
 
         return userRepository.findByEmail(email)
-            .map(userDtoMapper)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
     }
 

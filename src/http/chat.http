@@ -1,0 +1,27 @@
+### Join Chat Room / Create Chat Room
+GRPC localhost:9090/beer.supportly.chat.ChatService/JoinChatRoom
+
+{
+  "roomId": "2",
+  "userId": "241",
+  "userDisplayName": "Valentin"
+}
+
+### Broadcast Message to Room
+GRPC localhost:9090/beer.supportly.chat.ChatService/SendMessage
+
+{
+  "roomId": "1",
+  "senderId": "241",
+  "senderDisplayName": "Schurli",
+  "message": "Hello World",
+  "timestamp": "1684848635976"
+}
+
+### Leave Chat Room
+GRPC localhost:9090/beer.supportly.chat.ChatService/LeaveChatroom
+
+{
+  "roomId": "1",
+  "userId": "241"
+}

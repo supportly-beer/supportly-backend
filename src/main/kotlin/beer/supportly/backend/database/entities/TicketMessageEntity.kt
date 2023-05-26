@@ -1,9 +1,6 @@
 package beer.supportly.backend.database.entities
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
 data class TicketMessageEntity(
@@ -12,11 +9,18 @@ data class TicketMessageEntity(
     val id: Long? = null,
 
     val content: String,
-    val senderId: Long,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_to_message",
+        joinColumns = [JoinColumn(name = "message_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )
+    val sender: UserEntity,
 ) {
-    constructor() : this(null, "", -1)
+    constructor() : this(null, "", UserEntity())
     constructor(
         content: String,
-        senderId: Long
-    ) : this(null, content, senderId)
+        sender: UserEntity
+    ) : this(null, content, sender)
 }

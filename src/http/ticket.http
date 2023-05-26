@@ -1,0 +1,47 @@
+### Get all statistics from agent
+GET {{apiUrl}}/ticket/statistics/agent?startDate=0&endDate=99999999999999
+Authorization: Bearer {{token}}
+
+### Get all statistics from user
+GET {{apiUrl}}/ticket/statistics/user?startDate=0&endDate=99999999999999
+Authorization: Bearer {{token}}
+
+### Get a ticket
+GET {{apiUrl}}/ticket/TICKET-5
+Authorization: Bearer {{token}}
+
+### Get all ticket
+GET {{apiUrl}}/ticket/all?start=0&limit=10
+Authorization: Bearer {{token}}
+
+### Create a ticket
+POST {{apiUrl}}/ticket
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Zerwas",
+  "description": "Jo eicha System funktioniert ned richtig, des is komplette scheiße!"
+}
+
+### Assign Ticket to Agent
+POST {{apiUrl}}/ticket/TICKET-5/assign
+Authorization: Bearer {{token}}
+
+### Update a ticket
+POST {{apiUrl}}/ticket/TICKET-5/update
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ticketUrgency": "SHOW_STOPPER",
+  "ticketState": null
+}
+
+### Get your tickets
+GET {{apiUrl}}/ticket/my?start=0&limit=10
+Authorization: Bearer {{token}}
+
+### Get your ticket
+GET {{apiUrl}}/ticket/my/TICKET-1
+Authorization: Bearer {{token}}

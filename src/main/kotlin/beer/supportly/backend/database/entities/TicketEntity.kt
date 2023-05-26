@@ -10,9 +10,10 @@ data class TicketEntity(
 
     val identifier: String,
     val title: String,
+    val description: String,
     val createdAt: Long,
-    val closedAt: Long,
-    val updatedAt: Long,
+    val closedAt: Long? = null,
+    val updatedAt: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(
@@ -28,13 +29,13 @@ data class TicketEntity(
         joinColumns = [JoinColumn(name = "ticket_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
-    val assignee: UserEntity,
+    var assignee: UserEntity? = null,
 
     @Enumerated(EnumType.STRING)
-    val state: TicketState,
+    var state: TicketState,
 
     @Enumerated(EnumType.STRING)
-    val urgency: TicketUrgency,
+    var urgency: TicketUrgency,
 
     @OneToMany
     val messages: MutableList<TicketMessageEntity>
@@ -43,11 +44,12 @@ data class TicketEntity(
         null,
         "",
         "",
+        "",
         -1,
         -1,
         -1,
         UserEntity(),
-        UserEntity(),
+        null,
         TicketState.OPEN,
         TicketUrgency.MINOR,
         mutableListOf()
@@ -56,13 +58,24 @@ data class TicketEntity(
     constructor(
         identifier: String,
         title: String,
+        description: String,
         createdAt: Long,
-        closedAt: Long,
-        updatedAt: Long,
         creator: UserEntity,
-        assignee: UserEntity,
         state: TicketState,
         urgency: TicketUrgency,
         messages: MutableList<TicketMessageEntity>
-    ) : this(null, identifier, title, createdAt, closedAt, updatedAt, creator, assignee, state, urgency, messages)
+    ) : this(
+        null,
+        identifier,
+        title,
+        description,
+        createdAt,
+        -1,
+        -1,
+        creator,
+        null,
+        state,
+        urgency,
+        messages
+    )
 }

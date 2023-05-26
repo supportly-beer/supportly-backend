@@ -5,6 +5,7 @@ import beer.supportly.backend.dto.OperationSuccessDto
 import beer.supportly.backend.dto.TwofaEnabledDto
 import beer.supportly.backend.dto.UserDto
 import beer.supportly.backend.service.UserService
+import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -20,6 +21,7 @@ class UserController(
     }
 
     @GetMapping("{userId}")
+    @RolesAllowed("ROLE_ADMINISTRATOR")
     fun getUser(@PathVariable("userId") userId: Long): ResponseEntity<UserDto> {
         return ResponseEntity.ok(userService.getUser(userId))
     }

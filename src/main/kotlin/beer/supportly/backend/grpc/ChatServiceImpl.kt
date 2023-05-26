@@ -1,7 +1,7 @@
 package beer.supportly.backend.grpc
 
-import beer.supportly.protochat.ChatServiceGrpc
-import beer.supportly.protochat.TicketChat
+import beer.supportly.chat.ChatServiceGrpc
+import beer.supportly.chat.TicketChat
 import com.google.protobuf.Empty
 import io.grpc.stub.StreamObserver
 import org.springframework.stereotype.Service
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
 
-    private val chatRooms: MutableMap<String, Pair<MutableList<StreamObserver<TicketChat.ChatMessage>>,
+    private val chatRooms: MutableMap<String, Pair<MutableList<Pair<String, StreamObserver<TicketChat.ChatMessage>>>,
             MutableList<TicketChat.ChatMessage>>> = mutableMapOf()
 
     override fun joinChatRoom(
@@ -18,7 +18,7 @@ class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
     ) {
         val roomId = joinRoomRequest.roomId
         val userId = joinRoomRequest.userId
-        val username = joinRoomRequest.username
+        val userDisplayName = joinRoomRequest.userDisplayName
 
         val chatRoom = chatRooms.getOrPut(roomId) {
             Pair(mutableListOf(), mutableListOf())
@@ -26,15 +26,15 @@ class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
 
         val joinMessage = TicketChat.ChatMessage.newBuilder()
             .setRoomId(roomId)
-            .setSender("System")
-            .setMessage("join_$username")
+            .setSenderDisplayName("System")
+            .setMessage("join_$userId")
             .setTimestamp(System.currentTimeMillis().toString())
             .build()
 
         chatRoom.second.add(joinMessage)
 
-        chatRoom.first.forEach { it.onNext(joinMessage) }
-        chatRoom.first.add(responseObserver)
+        chatRoom.first.forEach { it.second.onNext(joinMessage) }
+        chatRoom.first.add(Pair(userId, responseObserver))
 
         chatRoom.second.stream().forEach {
             responseObserver.onNext(it)
@@ -50,8 +50,34 @@ class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
         if (chatRoom != null) {
             chatRoom.second.add(chatMessage)
             chatRoom.first.forEach {
-                it.onNext(chatMessage)
+                it.second.onNext(chatMessage)
             }
+        }
+
+        responseObserver.onNext(Empty.newBuilder().build())
+        responseObserver.onCompleted()
+    }
+
+    override fun leaveChatroom(
+        leaveRoomRequest: TicketChat.LeaveRoomRequest,
+        responseObserver: StreamObserver<Empty>
+    ) {
+        val roomId = leaveRoomRequest.roomId
+        val userId = leaveRoomRequest.userId
+
+        val chatRoom = chatRooms[roomId]
+
+        if (chatRoom != null) {
+            val leaveMessage = TicketChat.ChatMessage.newBuilder()
+                .setRoomId(roomId)
+                .setSenderDisplayName("System")
+                .setMessage("leave_$userId")
+                .setTimestamp(System.currentTimeMillis().toString())
+                .build()
+
+            chatRoom.second.add(leaveMessage)
+
+            chatRoom.first.forEach { it.second.onNext(leaveMessage) }
         }
 
         responseObserver.onNext(Empty.newBuilder().build())
