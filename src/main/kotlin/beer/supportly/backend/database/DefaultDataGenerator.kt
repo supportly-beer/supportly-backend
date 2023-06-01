@@ -10,7 +10,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
-
+/**
+ * Default data generator for the database
+ */
 @Component
 class DefaultDataGenerator(
     private val userService: UserService,
@@ -19,6 +21,9 @@ class DefaultDataGenerator(
 
     private val logger: Logger = LoggerFactory.getLogger(DefaultDataGenerator::class.java)
 
+    /**
+     * Generate the default data for the database
+     */
     @PostConstruct
     fun onPostConstruct() {
         val shouldCreateRoles = roleRepository.count() == 0L
@@ -51,6 +56,7 @@ class DefaultDataGenerator(
                 "https://media.istockphoto.com/id/1200677760/photo/portrait-of-handsome-smiling-young-man-with-crossed-arms.jpg?s=612x612&w=0&k=20&c=g_ZmKDpK9VEEzWw4vJ6O577ENGLTOcrvYeiLxi8mVuo=",
                 "not_set",
                 false,
+                true,
                 adminRole
             )
 

@@ -1,43 +1,54 @@
 package beer.supportly.backend.grpc
 
+import beer.supportly.backend.grpc.chat.ChatRoom
+import beer.supportly.backend.service.TicketService
+import beer.supportly.backend.service.UserService
 import beer.supportly.chat.ChatServiceGrpc
 import beer.supportly.chat.TicketChat
 import com.google.protobuf.Empty
 import io.grpc.stub.StreamObserver
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
-class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
+@Transactional
+class ChatServiceImpl(
+    private val ticketService: TicketService,
+    private val userService: UserService
+) : ChatServiceGrpc.ChatServiceImplBase() {
 
-    private val chatRooms: MutableMap<String, Pair<MutableList<Pair<String, StreamObserver<TicketChat.ChatMessage>>>,
-            MutableList<TicketChat.ChatMessage>>> = mutableMapOf()
+    private val chatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
 
     override fun joinChatRoom(
         joinRoomRequest: TicketChat.JoinRoomRequest,
         responseObserver: StreamObserver<TicketChat.ChatMessage>
     ) {
-        val roomId = joinRoomRequest.roomId
-        val userId = joinRoomRequest.userId
-        val userDisplayName = joinRoomRequest.userDisplayName
+        val ticketEntity = ticketService.getOriginalTicket(joinRoomRequest.roomId)
 
-        val chatRoom = chatRooms.getOrPut(roomId) {
-            Pair(mutableListOf(), mutableListOf())
-        }
+        if (ticketEntity.isPresent) {
+            val chatRoom = chatRooms.getOrPut(joinRoomRequest.roomId) {
+                ChatRoom(
+                    joinRoomRequest.roomId,
+                    mutableMapOf(),
+                    ticketEntity.get().messages.stream().map {
+                        TicketChat.ChatMessage.newBuilder()
+                            .setRoomId(joinRoomRequest.roomId)
+                            .setSenderId(it.sender.id!!)
+                            .setSenderDisplayName(it.sender.firstName + " " + it.sender.lastName)
+                            .setMessage(it.content)
+                            .setTimestamp(it.timestamp)
+                            .build()
+                    }.toList()
+                )
+            }
 
-        val joinMessage = TicketChat.ChatMessage.newBuilder()
-            .setRoomId(roomId)
-            .setSenderDisplayName("System")
-            .setMessage("join_$userId")
-            .setTimestamp(System.currentTimeMillis().toString())
-            .build()
+            chatRoom.users[joinRoomRequest.userId] = responseObserver
 
-        chatRoom.second.add(joinMessage)
-
-        chatRoom.first.forEach { it.second.onNext(joinMessage) }
-        chatRoom.first.add(Pair(userId, responseObserver))
-
-        chatRoom.second.stream().forEach {
-            responseObserver.onNext(it)
+            chatRoom.messages.forEach {
+                responseObserver.onNext(it)
+            }
+        } else {
+            responseObserver.onCompleted()
         }
     }
 
@@ -47,11 +58,17 @@ class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
     ) {
         val chatRoom = chatRooms[chatMessage.roomId]
 
-        if (chatRoom != null) {
-            chatRoom.second.add(chatMessage)
-            chatRoom.first.forEach {
-                it.second.onNext(chatMessage)
+        val ticketEntity = ticketService.getOriginalTicket(chatMessage.roomId)
+        val userEntity = userService.getOriginalUser(chatMessage.senderId)
+
+        if (chatRoom != null && ticketEntity.isPresent && userEntity.isPresent) {
+            chatRoom.messages.add(chatMessage)
+
+            chatRoom.users.forEach {
+                it.value.onNext(chatMessage)
             }
+
+            ticketService.addMessage(ticketEntity.get(), userEntity.get(), chatMessage.timestamp, chatMessage.message)
         }
 
         responseObserver.onNext(Empty.newBuilder().build())
@@ -62,22 +79,11 @@ class ChatServiceImpl : ChatServiceGrpc.ChatServiceImplBase() {
         leaveRoomRequest: TicketChat.LeaveRoomRequest,
         responseObserver: StreamObserver<Empty>
     ) {
-        val roomId = leaveRoomRequest.roomId
-        val userId = leaveRoomRequest.userId
-
-        val chatRoom = chatRooms[roomId]
+        val chatRoom = chatRooms[leaveRoomRequest.roomId]
 
         if (chatRoom != null) {
-            val leaveMessage = TicketChat.ChatMessage.newBuilder()
-                .setRoomId(roomId)
-                .setSenderDisplayName("System")
-                .setMessage("leave_$userId")
-                .setTimestamp(System.currentTimeMillis().toString())
-                .build()
-
-            chatRoom.second.add(leaveMessage)
-
-            chatRoom.first.forEach { it.second.onNext(leaveMessage) }
+            chatRoom.users[leaveRoomRequest.userId]?.onCompleted()
+            chatRoom.users.remove(leaveRoomRequest.userId)
         }
 
         responseObserver.onNext(Empty.newBuilder().build())

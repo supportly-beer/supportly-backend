@@ -4,10 +4,12 @@ import beer.supportly.backend.database.entities.UserEntity
 import beer.supportly.backend.database.repositories.RoleRepository
 import beer.supportly.backend.database.repositories.UserRepository
 import beer.supportly.backend.dto.CreateUserDto
+import beer.supportly.backend.dto.ForgotPasswordDto
 import beer.supportly.backend.dto.TwofaEnabledDto
 import beer.supportly.backend.dto.UserDto
 import beer.supportly.backend.dto.mapper.UserDtoMapper
 import beer.supportly.backend.exception.BackendException
+import beer.supportly.backend.mail.MailService
 import beer.supportly.backend.security.service.JwtService
 import beer.supportly.backend.utils.QrCodeUtils
 import dev.turingcomplete.kotlinonetimepassword.GoogleAuthenticator
@@ -24,7 +26,8 @@ class UserService(
     private val roleRepository: RoleRepository,
     private val userDtoMapper: UserDtoMapper,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val mailService: MailService
 ) {
 
     fun enableTwofa(jwt: String): TwofaEnabledDto {
@@ -65,10 +68,12 @@ class UserService(
             createUserDto.profilePictureUrl,
             "not_set",
             false,
+            false,
             roleEntity.get()
         )
 
         this.saveUser(userEntity)
+        this.sendEmailValidation(userEntity)
     }
 
     fun saveUser(userEntity: UserEntity) {
@@ -76,13 +81,13 @@ class UserService(
     }
 
     fun getUser(userId: Long): UserDto {
-        return Optional.of(this.getOriginalUser(userId))
+        return this.getOriginalUser(userId)
             .map(userDtoMapper)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
     }
 
-    fun getOriginalUser(userId: Long): UserEntity {
-        return userRepository.findById(userId).orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+    fun getOriginalUser(userId: Long): Optional<UserEntity> {
+        return userRepository.findById(userId)
     }
 
     fun getUserFromToken(jwt: String): UserDto {
@@ -100,5 +105,48 @@ class UserService(
 
     fun getUserCount(): Long {
         return userRepository.count()
+    }
+
+    fun validateEmail(token: String) {
+        TODO("Not yet implemented")
+    }
+
+    fun forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+        val userEntity = userRepository.findByEmail(forgotPasswordDto.email)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+
+        this.sendForgotPassword(userEntity)
+    }
+
+    fun resetPassword(token: String) {
+        TODO("Not yet implemented")
+    }
+
+    fun sendForgotPassword(userEntity: UserEntity) {
+        mailService.sendMail(
+            userEntity.email, "Reset your password!", mailService.getForgotPasswordTemplate(
+                userEntity.firstName,
+                userEntity.lastName,
+                jwtService.generateToken(
+                    mapOf("type" to "resetPassword"),
+                    userEntity,
+                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
+                )
+            )
+        )
+    }
+
+    fun sendEmailValidation(userEntity: UserEntity) {
+        mailService.sendMail(
+            userEntity.email, "Welcome to Supportly!", mailService.getValidateEmailTemplate(
+                userEntity.firstName,
+                userEntity.lastName,
+                jwtService.generateToken(
+                    mapOf("type" to "validateEmail"),
+                    userEntity,
+                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
+                )
+            )
+        )
     }
 }

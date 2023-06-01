@@ -2,18 +2,17 @@
 GRPC localhost:9090/beer.supportly.chat.ChatService/JoinChatRoom
 
 {
-  "roomId": "2",
-  "userId": "241",
-  "userDisplayName": "Valentin"
+  "roomId": "TICKET-1",
+  "userId": "1"
 }
 
 ### Broadcast Message to Room
 GRPC localhost:9090/beer.supportly.chat.ChatService/SendMessage
 
 {
-  "roomId": "1",
-  "senderId": "241",
-  "senderDisplayName": "Schurli",
+  "roomId": "TICKET-1",
+  "senderId": "1",
+  "senderDisplayName": "Jerro",
   "message": "Hello World",
   "timestamp": "1684848635976"
 }
@@ -22,6 +21,6 @@ GRPC localhost:9090/beer.supportly.chat.ChatService/SendMessage
 GRPC localhost:9090/beer.supportly.chat.ChatService/LeaveChatroom
 
 {
-  "roomId": "1",
-  "userId": "241"
+  "roomId": "TICKET-1",
+  "userId": "1"
 }

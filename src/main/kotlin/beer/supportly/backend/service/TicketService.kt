@@ -1,8 +1,7 @@
 package beer.supportly.backend.service
 
-import beer.supportly.backend.database.entities.TicketEntity
-import beer.supportly.backend.database.entities.TicketState
-import beer.supportly.backend.database.entities.TicketUrgency
+import beer.supportly.backend.database.entities.*
+import beer.supportly.backend.database.repositories.TicketMessageRepository
 import beer.supportly.backend.database.repositories.TicketRepository
 import beer.supportly.backend.dto.*
 import beer.supportly.backend.dto.mapper.TicketDtoMapper
@@ -11,6 +10,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.util.*
 import java.util.stream.Collectors
 import kotlin.math.roundToLong
 
@@ -19,6 +19,7 @@ import kotlin.math.roundToLong
 class TicketService(
     private val userService: UserService,
     private val ticketRepository: TicketRepository,
+    private val ticketMessageRepository: TicketMessageRepository,
     private val ticketDtoMapper: TicketDtoMapper
 ) {
     fun getAgentStatistics(token: String, startDate: Long?, endDate: Long?): AgentTicketStatisticsDto {
@@ -136,15 +137,26 @@ class TicketService(
     }
 
     fun getTicket(identifier: String): TicketDto {
-        return ticketRepository.findByIdentifier(identifier)
+        return this.getOriginalTicket(identifier)
             .map(ticketDtoMapper)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "Ticket not found") }
+    }
+
+    fun getOriginalTicket(identifier: String): Optional<TicketEntity> {
+        return ticketRepository.findByIdentifier(identifier)
     }
 
     fun getAllTickets(start: Int, limit: Int): List<TicketDto> {
         return ticketRepository.findAll(PageRequest.of(start, limit)).stream()
             .map(ticketDtoMapper)
             .collect(Collectors.toList())
+    }
+
+    fun addMessage(ticketEntity: TicketEntity, userEntity: UserEntity, timestamp: Long, content: String) {
+        val message = TicketMessageEntity(content, timestamp, userEntity)
+        ticketMessageRepository.save(message)
+
+        ticketEntity.messages.add(message)
     }
 
     fun createTicket(token: String, createTicketDto: CreateTicketDto) {

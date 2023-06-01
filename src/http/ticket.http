@@ -21,21 +21,21 @@ Content-Type: application/json
 
 {
   "title": "Zerwas",
-  "description": "Jo eicha System funktioniert ned richtig, des is komplette scheiße!"
+  "description": "Jo eicha System funktioniert ned richtig, des is kompletter müll!"
 }
 
 ### Assign Ticket to Agent
-POST {{apiUrl}}/ticket/TICKET-5/assign
+POST {{apiUrl}}/ticket/TICKET-1/assign
 Authorization: Bearer {{token}}
 
 ### Update a ticket
-POST {{apiUrl}}/ticket/TICKET-5/update
+POST {{apiUrl}}/ticket/TICKET-1/update
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "ticketUrgency": "SHOW_STOPPER",
-  "ticketState": null
+  "ticketState": "ASSIGNED"
 }
 
 ### Get your tickets

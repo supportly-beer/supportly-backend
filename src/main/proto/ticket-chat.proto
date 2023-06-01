@@ -4,27 +4,22 @@ package beer.supportly.chat;
 
 import "google/protobuf/empty.proto";
 
-message ChatMessage {
-  string roomId = 1;
-  string senderId = 2;
-  string senderDisplayName = 3;
-  string message = 4;
-  string timestamp = 5;
-}
-
-message ChatRoom {
-  string id = 1;
-}
-
 message JoinRoomRequest {
   string roomId = 1;
-  string userId = 2;
-  string userDisplayName = 3;
+  int64 userId = 2;
+}
+
+message ChatMessage {
+  string roomId = 1;
+  int64 senderId = 2;
+  string senderDisplayName = 3;
+  string message = 4;
+  int64 timestamp = 5;
 }
 
 message LeaveRoomRequest {
   string roomId = 1;
-  string userId = 2;
+  int64 userId = 2;
 }
 
 service ChatService {

@@ -5,6 +5,16 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 
+/**
+ * Entity for the Role table
+ *
+ * @param id the id of the role
+ * @param name the name of the role
+ *
+ * @constructor constructor with all values
+ * @constructor constructor with no values where default values are set
+ * @constructor constructor with only required values
+ */
 @Entity
 data class RoleEntity(
     @Id
