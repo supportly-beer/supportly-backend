@@ -3,20 +3,21 @@ package beer.supportly.backend.service
 import beer.supportly.backend.database.entities.UserEntity
 import beer.supportly.backend.database.repositories.RoleRepository
 import beer.supportly.backend.database.repositories.UserRepository
-import beer.supportly.backend.dto.CreateUserDto
-import beer.supportly.backend.dto.ForgotPasswordDto
-import beer.supportly.backend.dto.TwofaEnabledDto
-import beer.supportly.backend.dto.UserDto
+import beer.supportly.backend.dto.*
 import beer.supportly.backend.dto.mapper.UserDtoMapper
 import beer.supportly.backend.exception.BackendException
 import beer.supportly.backend.mail.MailService
 import beer.supportly.backend.security.service.JwtService
 import beer.supportly.backend.utils.QrCodeUtils
+import com.azure.storage.blob.BlobServiceClient
+import com.azure.storage.blob.options.BlobParallelUploadOptions
 import dev.turingcomplete.kotlinonetimepassword.GoogleAuthenticator
 import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.time.Duration
 import java.util.*
 
 /**
@@ -28,6 +29,7 @@ import java.util.*
  * @property passwordEncoder The password encoder.
  * @property jwtService The JWT service.
  * @property mailService The mail service.
+ * @property blobServiceClient The blob service client.
  *
  * @see beer.supportly.backend.database.repositories.UserRepository
  * @see beer.supportly.backend.database.repositories.RoleRepository
@@ -43,7 +45,8 @@ class UserService(
     private val userDtoMapper: UserDtoMapper,
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
-    private val mailService: MailService
+    private val mailService: MailService,
+    private val blobServiceClient: BlobServiceClient
 ) {
 
     /**
@@ -249,5 +252,37 @@ class UserService(
                 )
             )
         )
+    }
+
+    /**
+     * Uploads a profile picture for a user.
+     *
+     * @param token The token.
+     * @param profilePicture The profile picture.
+     *
+     * @return The DTO containing the operation success.
+     *
+     * @throws BackendException If the user does not exist.
+     * @throws BackendException If the profile picture could not be uploaded.
+     */
+    fun uploadProfilePicture(token: String, profilePicture: MultipartFile): OperationSuccessDto {
+        val userEntity = this.getOriginalUserFromToken(token)
+        val options = BlobParallelUploadOptions(profilePicture.inputStream)
+
+        val imageName = "${UUID.randomUUID()}-${userEntity.id}.${
+            profilePicture.originalFilename?.split(".")?.last()
+        }"
+
+        val response = blobServiceClient.getBlobContainerClient("users")
+            .getBlobClient(imageName)
+            .uploadWithResponse(options, Duration.ofSeconds(30), null)
+
+        val operationSuccessful = response.value?.let {
+            OperationSuccessDto(true, null)
+        } ?: throw BackendException(HttpStatus.INTERNAL_SERVER_ERROR, "Could not upload profile picture")
+
+        userEntity.profilePictureUrl = "https://supportly.blob.core.windows.net/users/$imageName"
+
+        return operationSuccessful
     }
 }

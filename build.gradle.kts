@@ -13,13 +13,18 @@ plugins {
     kotlin("plugin.spring") version "1.7.22"
 }
 
+dependencyManagement {
+    imports {
+        mavenBom("com.azure:azure-sdk-bom:1.2.13")
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -42,6 +47,10 @@ dependencies {
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
     implementation("com.meilisearch.sdk:meilisearch-java:0.11.1")
     implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+
+    implementation("com.azure:azure-storage-blob")
+    implementation("com.azure:azure-storage-common")
+    implementation("com.azure:azure-identity")
 
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.11.5")
     implementation(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.11.5")

@@ -8,6 +8,7 @@ import beer.supportly.backend.service.UserService
 import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller for the user endpoints
@@ -85,5 +86,21 @@ class UserController(
     @PostMapping("/enableTwofa")
     fun enableTwofa(@RequestHeader("Authorization") token: String): ResponseEntity<TwofaEnabledDto> {
         return ResponseEntity.ok(userService.enableTwofa(token.substring("Bearer ".length)))
+    }
+
+    /**
+     * Endpoint upload a new profile picture
+     *
+     * @param token contains the token
+     * @param profilePicture contains the profile picture
+     *
+     * @return OperationSuccessDto contains the operation success
+     */
+    @PostMapping("/upload")
+    fun uploadProfilePicture(
+        @RequestHeader("Authorization") token: String,
+        @RequestParam("profilePicture") profilePicture: MultipartFile
+    ): ResponseEntity<OperationSuccessDto> {
+        return ResponseEntity.ok(userService.uploadProfilePicture(token.substring("Bearer ".length), profilePicture))
     }
 }

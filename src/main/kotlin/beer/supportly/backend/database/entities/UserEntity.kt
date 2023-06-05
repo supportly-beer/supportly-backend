@@ -35,7 +35,7 @@ data class UserEntity(
     val firstName: String,
     val lastName: String,
     val userPassword: String,
-    val profilePictureUrl: String,
+    var profilePictureUrl: String,
 
     var twofaCode: String,
     var twofaEnabled: Boolean,
