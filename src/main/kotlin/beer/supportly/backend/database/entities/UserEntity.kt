@@ -32,8 +32,8 @@ data class UserEntity(
     val id: Long? = null,
 
     val email: String,
-    val firstName: String,
-    val lastName: String,
+    var firstName: String,
+    var lastName: String,
     val userPassword: String,
     var profilePictureUrl: String,
 

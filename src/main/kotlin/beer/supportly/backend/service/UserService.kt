@@ -285,4 +285,35 @@ class UserService(
 
         return operationSuccessful
     }
+
+    /**
+     * Disables two-factor authentication for a user.
+     *
+     * @param token The token.
+     *
+     * @return The DTO containing the operation success.
+     *
+     * @throws BackendException If the user does not exist.
+     */
+    fun disableTwofa(token: String) {
+        val userEntity = this.getOriginalUserFromToken(token)
+
+        userEntity.twofaEnabled = false
+        userEntity.twofaCode = "not_set"
+    }
+
+    /**
+     * Update a user
+     *
+     * @param token The token.
+     * @param updateUserDto The DTO containing the user data.
+     *
+     * @throws BackendException If the user does not exist.
+     */
+    fun updateUser(token: String, updateUserDto: UpdateUserDto) {
+        val userEntity = this.getOriginalUserFromToken(token)
+
+        if (updateUserDto.firstName != null) userEntity.firstName = updateUserDto.firstName
+        if (updateUserDto.lastName != null) userEntity.lastName = updateUserDto.lastName
+    }
 }

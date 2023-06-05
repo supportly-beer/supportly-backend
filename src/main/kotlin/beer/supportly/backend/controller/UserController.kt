@@ -1,9 +1,6 @@
 package beer.supportly.backend.controller
 
-import beer.supportly.backend.dto.CreateUserDto
-import beer.supportly.backend.dto.OperationSuccessDto
-import beer.supportly.backend.dto.TwofaEnabledDto
-import beer.supportly.backend.dto.UserDto
+import beer.supportly.backend.dto.*
 import beer.supportly.backend.service.UserService
 import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.ResponseEntity
@@ -102,5 +99,42 @@ class UserController(
         @RequestParam("profilePicture") profilePicture: MultipartFile
     ): ResponseEntity<OperationSuccessDto> {
         return ResponseEntity.ok(userService.uploadProfilePicture(token.substring("Bearer ".length), profilePicture))
+    }
+
+    /**
+     * Endpoint to disable two-factor authentication
+     *
+     * @param token contains the token
+     *
+     * @return OperationSuccessDto contains the operation success
+     *
+     * @throws beer.supportly.backend.exception.BackendException if the user is already disabled
+     *
+     * @see beer.supportly.backend.dto.OperationSuccessDto
+     */
+    @PostMapping("/disableTwofa")
+    fun disableTwofa(@RequestHeader("Authorization") token: String): ResponseEntity<OperationSuccessDto> {
+        userService.disableTwofa(token.substring("Bearer ".length))
+        return ResponseEntity.ok(OperationSuccessDto(true, null))
+    }
+
+    /**
+     * Endpoint to update a user
+     *
+     * @param token contains the token
+     *
+     * @return OperationSuccessDto contains the operation success
+     *
+     * @throws beer.supportly.backend.exception.BackendException if the user is already disabled
+     *
+     * @see beer.supportly.backend.dto.OperationSuccessDto
+     */
+    @PostMapping("/update")
+    fun updateUser(
+        @RequestHeader("Authorization") token: String,
+        @RequestBody updateUserDto: UpdateUserDto
+    ): ResponseEntity<OperationSuccessDto> {
+        userService.updateUser(token.substring("Bearer ".length), updateUserDto)
+        return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
 }
