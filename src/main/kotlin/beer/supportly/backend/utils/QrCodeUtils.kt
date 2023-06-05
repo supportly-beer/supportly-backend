@@ -7,9 +7,21 @@ import org.apache.tomcat.util.codec.binary.Base64
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
+/**
+ * Utility class for generating QR codes.
+ */
 class QrCodeUtils {
 
     companion object {
+
+        /**
+         * Generates a QR code for the given email and secret.
+         *
+         * @param email The email.
+         * @param secret The secret.
+         *
+         * @return The base64 encoded QR code.
+         */
         fun generateQrCode(email: String, secret: String): String {
             val issuer = "Supportly"
             val uri = "otpauth://totp/$issuer:$email?secret=$secret&issuer=$issuer"

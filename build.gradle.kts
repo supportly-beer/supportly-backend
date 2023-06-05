@@ -40,6 +40,8 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java-util:3.22.3")
     implementation("com.google.protobuf:protobuf-kotlin:3.22.3")
     implementation("io.grpc:grpc-kotlin-stub:1.3.0")
+    implementation("com.meilisearch.sdk:meilisearch-java:0.11.1")
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 
     implementation(group = "io.jsonwebtoken", name = "jjwt-api", version = "0.11.5")
     implementation(group = "io.jsonwebtoken", name = "jjwt-impl", version = "0.11.5")

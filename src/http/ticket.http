@@ -45,3 +45,7 @@ Authorization: Bearer {{token}}
 ### Get your ticket
 GET {{apiUrl}}/ticket/my/TICKET-1
 Authorization: Bearer {{token}}
+
+### Search Tickets
+GET {{apiUrl}}/ticket/search?limit=10&query=
+Authorization: Bearer {{token}}

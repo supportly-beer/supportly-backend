@@ -8,16 +8,16 @@ import org.springframework.security.core.userdetails.UserDetails
 /**
  * Entity for the User table
  *
- * @param id the id of the user
- * @param email the email of the user
- * @param firstName the first name of the user
- * @param lastName the last name of the user
- * @param userPassword the password of the user
- * @param profilePictureUrl the profile picture url of the user
- * @param twofaCode the twofa code of the user
- * @param twofaEnabled the twofa enabled of the user
- * @param emailVerified the email verified of the user
- * @param role the role of the user
+ * @property id the id of the user
+ * @property email the email of the user
+ * @property firstName the first name of the user
+ * @property lastName the last name of the user
+ * @property userPassword the password of the user
+ * @property profilePictureUrl the profile picture url of the user
+ * @property twofaCode the twofa code of the user
+ * @property twofaEnabled the twofa enabled of the user
+ * @property emailVerified the email verified of the user
+ * @property role the role of the user
  *
  * @constructor constructor with all values
  * @constructor constructor with no values where default values are set

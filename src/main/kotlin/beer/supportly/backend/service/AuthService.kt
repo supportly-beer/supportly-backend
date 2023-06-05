@@ -15,6 +15,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service
 import java.util.*
 
+/**
+ * Authentication service.
+ *
+ * @property userRepository The user repository.
+ * @property jwtService The JWT service.
+ * @property authenticationManager The authentication manager.
+ *
+ * @see beer.supportly.backend.database.repositories.UserRepository
+ * @see beer.supportly.backend.security.service.JwtService
+ */
 @Service
 class AuthService(
     private val userRepository: UserRepository,
@@ -22,6 +32,16 @@ class AuthService(
     private val authenticationManager: AuthenticationManager
 ) {
 
+    /**
+     * Logs in a user or required two-factor.
+     *
+     * @param loginDto The login DTO.
+     *
+     * @return The token DTO.
+     *
+     * @throws BackendException If the user is not found.
+     * @throws TwofaRequiredException If two-factor is required.
+     */
     fun login(loginDto: LoginDto): TokenDto {
         authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginDto.email, loginDto.password))
 
@@ -47,6 +67,15 @@ class AuthService(
         return TokenDto("success", accessToken)
     }
 
+    /**
+     * Validates a token.
+     *
+     * @param token The token.
+     *
+     * @return The operation success DTO.
+     *
+     * @throws BackendException If the user is not found or the token has an invalid signature.
+     */
     fun validate(token: String): OperationSuccessDto {
         val email = jwtService.extractEmail(token)
             ?: throw BackendException(HttpStatus.BAD_REQUEST, "Invalid token signature")
@@ -57,6 +86,15 @@ class AuthService(
         return OperationSuccessDto(jwtService.isTokenValid(token, userEntity), null)
     }
 
+    /**
+     * Checks the two-factor code.
+     *
+     * @param twofaDto The two-factor DTO.
+     *
+     * @return The token DTO.
+     *
+     * @throws BackendException If the user is not found or the code is wrong.
+     */
     fun twofa(twofaDto: TwofaDto): TokenDto {
         val userEntity = userRepository.findByEmail(twofaDto.email)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }

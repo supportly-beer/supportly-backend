@@ -1,0 +1,24 @@
+version: '3'
+services:
+  envoy:
+    container_name: envoy
+    image: envoyproxy/envoy:dev
+    volumes:
+      - ./envoy.yml:/etc/envoy/envoy.yaml
+    ports:
+      - "9091:9091"
+      - "9901:9901"
+
+  meilisearch:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v1.2.0-rc.4
+    environment:
+      - MEILI_MASTER_KEY=GOChGlk8hDDaZCJ4MnzabhfhH2vJ_Pe18vUTU_wYiSI
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./data/meili_data:/meili_data
+    restart: unless-stopped
+
+volumes:
+  meili_data:

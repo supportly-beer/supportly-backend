@@ -16,13 +16,33 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
-
+/**
+ * This filter is used to authenticate the user based on the JWT token provided in the request header.
+ * If the token is valid, the user is authenticated and the request is allowed to proceed.
+ * If the token is invalid, the request is rejected with an error.
+ *
+ * @property jwtService The service used to validate the JWT token.
+ * @property userDetailsService The service used to load the user details from the database.
+ *
+ * @see beer.supportly.backend.security.service.JwtService
+ */
 @Component
 class JwtAuthenticationFilter(
     private val jwtService: JwtService,
     private val userDetailsService: UserDetailsService
 ) : OncePerRequestFilter() {
 
+    /**
+     * This method is called by the filter chain when a request is received.
+     * It extracts the JWT token from the request header and validates it.
+     *
+     * If the token is valid, the user is authenticated and the request is allowed to proceed.
+     * If the token is invalid, the request is rejected with an error.
+     *
+     * @param httpServletRequest The request received.
+     * @param httpServletResponse The response to be sent.
+     * @param filterChain The filter chain.
+     */
     override fun doFilterInternal(
         httpServletRequest: HttpServletRequest,
         httpServletResponse: HttpServletResponse,
@@ -66,6 +86,12 @@ class JwtAuthenticationFilter(
         }
     }
 
+    /**
+     * This method converts an object to a JSON string.
+     *
+     * @param value The object to be converted.
+     * @return The JSON string.
+     */
     fun convertObjectToJson(value: Any): String {
         return ObjectMapper().writeValueAsString(value)
     }

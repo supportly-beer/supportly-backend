@@ -16,6 +16,14 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 
+/**
+ * Security configuration.
+ *
+ * @property jwtAuthenticationFilter The JWT authentication filter.
+ * @property authenticationProvider The authentication provider.
+ *
+ * @see beer.supportly.backend.security.filter.JwtAuthenticationFilter
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
@@ -24,6 +32,13 @@ class SecurityConfig(
     private val authenticationProvider: AuthenticationProvider
 ) {
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param httpSecurity The HTTP security.
+     *
+     * @return The security filter chain.
+     */
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity.csrf().disable()
@@ -46,6 +61,13 @@ class SecurityConfig(
         return httpSecurity.build()
     }
 
+    /**
+     * Configures the CORS configuration source.
+     *
+     * @param corsOrigin The CORS origin.
+     *
+     * @return The CORS configuration source.
+     */
     private fun corsConfigurationSource(corsOrigin: String): CorsConfigurationSource {
         val corsConfiguration = CorsConfiguration()
 

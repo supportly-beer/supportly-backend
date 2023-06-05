@@ -5,12 +5,23 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
 
+/**
+ * Service to send emails to users.
+ *
+ * @property javaMailSender The mail sender to use.
+ */
 @Service
 class MailService(
     private val javaMailSender: JavaMailSender
 ) {
 
-
+    /**
+     * Sends an email to the given email address.
+     *
+     * @param email The email address to send the email to.
+     * @param title The title of the email.
+     * @param message The message of the email.
+     */
     fun sendMail(email: String, title: String, message: String) {
         val mimeMessage = javaMailSender.createMimeMessage()
         val mimeMessageHelper = MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name())
@@ -23,6 +34,15 @@ class MailService(
         javaMailSender.send(mimeMessageHelper.mimeMessage)
     }
 
+    /**
+     * Get the email template for the email validation
+     *
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param token The token to validate the email.
+     *
+     * @return The email template.
+     */
     fun getValidateEmailTemplate(firstName: String, lastName: String, token: String): String {
         val verifyUrl = "http://localhost:8080/auth/validate-email?token=$token"
         return this.getHtmlTemplate(
@@ -35,6 +55,15 @@ class MailService(
         )
     }
 
+    /**
+     * Get the email template for the forgot password email.
+     *
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param token The token to reset the password.
+     *
+     * @return The email template.
+     */
     fun getForgotPasswordTemplate(firstName: String, lastName: String, token: String): String {
         val forgotUrl = "http://localhost:8080/auth/reset-password?token=$token"
         return this.getHtmlTemplate(
@@ -47,6 +76,18 @@ class MailService(
         )
     }
 
+    /**
+     * Get the email general email template.
+     *
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param chapterOne The first chapter of the email.
+     * @param buttonText The text of the button.
+     * @param chapterTwo The second chapter of the email.
+     * @param url The url to redirect to.
+     *
+     * @return The email template.
+     */
     fun getHtmlTemplate(
         firstName: String,
         lastName: String,

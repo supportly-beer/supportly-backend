@@ -9,7 +9,14 @@ import com.google.protobuf.Empty
 import io.grpc.stub.StreamObserver
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import java.util.stream.Collectors
 
+/**
+ * ChatServiceImpl is the implementation of the ChatServiceGrpc.ChatServiceImplBase
+ *
+ * @property ticketService the ticket service
+ * @property userService the user service
+ */
 @Service
 @Transactional
 class ChatServiceImpl(
@@ -19,6 +26,12 @@ class ChatServiceImpl(
 
     private val chatRooms: MutableMap<String, ChatRoom> = mutableMapOf()
 
+    /**
+     * joinChatRoom is the implementation of the joinChatRoom method of the ChatServiceGrpc.ChatServiceImplBase
+     *
+     * @param joinRoomRequest the join room request
+     * @param responseObserver the response observer
+     */
     override fun joinChatRoom(
         joinRoomRequest: TicketChat.JoinRoomRequest,
         responseObserver: StreamObserver<TicketChat.ChatMessage>
@@ -38,7 +51,7 @@ class ChatServiceImpl(
                             .setMessage(it.content)
                             .setTimestamp(it.timestamp)
                             .build()
-                    }.toList()
+                    }.collect(Collectors.toList())
                 )
             }
 
@@ -52,6 +65,12 @@ class ChatServiceImpl(
         }
     }
 
+    /**
+     * sendMessage is the implementation of the sendMessage method of the ChatServiceGrpc.ChatServiceImplBase
+     *
+     * @param chatMessage the chat message
+     * @param responseObserver the response observer
+     */
     override fun sendMessage(
         chatMessage: TicketChat.ChatMessage,
         responseObserver: StreamObserver<Empty>
@@ -75,6 +94,12 @@ class ChatServiceImpl(
         responseObserver.onCompleted()
     }
 
+    /**
+     * leaveChatroom is the implementation of the leaveChatroom method of the ChatServiceGrpc.ChatServiceImplBase
+     *
+     * @param leaveRoomRequest the leave room request
+     * @param responseObserver the response observer
+     */
     override fun leaveChatroom(
         leaveRoomRequest: TicketChat.LeaveRoomRequest,
         responseObserver: StreamObserver<Empty>
@@ -84,6 +109,10 @@ class ChatServiceImpl(
         if (chatRoom != null) {
             chatRoom.users[leaveRoomRequest.userId]?.onCompleted()
             chatRoom.users.remove(leaveRoomRequest.userId)
+
+            if (chatRoom.users.isEmpty()) {
+                chatRooms.remove(leaveRoomRequest.roomId)
+            }
         }
 
         responseObserver.onNext(Empty.newBuilder().build())

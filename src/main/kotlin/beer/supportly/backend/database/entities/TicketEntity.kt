@@ -5,18 +5,18 @@ import jakarta.persistence.*
 /**
  * Entity for the Ticket table
  *
- * @param id the id of the ticket
- * @param identifier the identifier of the ticket
- * @param title the title of the ticket
- * @param description the description of the ticket
- * @param createdAt the creation date of the ticket
- * @param closedAt the closing date of the ticket
- * @param updatedAt the update date of the ticket
- * @param creator the creator of the ticket
- * @param assignee the assignee of the ticket
- * @param state the state of the ticket
- * @param urgency the urgency of the ticket
- * @param messages the messages of the ticket
+ * @property id the id of the ticket
+ * @property identifier the identifier of the ticket
+ * @property title the title of the ticket
+ * @property description the description of the ticket
+ * @property createdAt the creation date of the ticket
+ * @property closedAt the closing date of the ticket
+ * @property updatedAt the update date of the ticket
+ * @property creator the creator of the ticket
+ * @property assignee the assignee of the ticket
+ * @property state the state of the ticket
+ * @property urgency the urgency of the ticket
+ * @property messages the messages of the ticket
  *
  * @constructor constructor with all values
  * @constructor constructor with no values where default values are set

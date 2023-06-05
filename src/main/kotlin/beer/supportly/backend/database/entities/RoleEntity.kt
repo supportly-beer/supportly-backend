@@ -8,8 +8,8 @@ import jakarta.persistence.Id
 /**
  * Entity for the Role table
  *
- * @param id the id of the role
- * @param name the name of the role
+ * @property id the id of the role
+ * @property name the name of the role
  *
  * @constructor constructor with all values
  * @constructor constructor with no values where default values are set

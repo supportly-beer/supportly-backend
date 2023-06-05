@@ -197,4 +197,23 @@ class TicketController(
     ): ResponseEntity<TicketDto> {
         return ResponseEntity.ok(ticketService.getMyTicket(token.substring("Bearer ".length), identifier))
     }
+
+    /**
+     * Endpoint to search tickets
+     *
+     * @param query contains the query
+     * @param limit contains the limit
+     *
+     * @return SearchResultDto contains the search result
+     *
+     * @see beer.supportly.backend.dto.SearchResultDto
+     */
+    @GetMapping("/search")
+    @RolesAllowed("ROLE_ADMINISTRATOR", "ROLE_AGENT")
+    fun searchTickets(
+        @RequestParam(name = "query", required = true) query: String,
+        @RequestParam(name = "limit", required = true) limit: Int
+    ): ResponseEntity<SearchResultDto> {
+        return ResponseEntity.ok(ticketService.searchTickets(query, limit))
+    }
 }

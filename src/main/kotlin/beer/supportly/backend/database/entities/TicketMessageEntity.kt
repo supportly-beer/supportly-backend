@@ -5,10 +5,10 @@ import jakarta.persistence.*
 /**
  * Entity for the TicketMessage table
  *
- * @param id the id of the ticket message
- * @param content the content of the ticket message
- * @param timestamp the timestamp of the ticket message
- * @param sender the sender of the ticket message
+ * @property id the id of the ticket message
+ * @property content the content of the ticket message
+ * @property timestamp the timestamp of the ticket message
+ * @property sender the sender of the ticket message
  *
  * @constructor constructor with all values
  * @constructor constructor with no values where default values are set
