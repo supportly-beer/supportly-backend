@@ -1,9 +1,13 @@
 package beer.supportly.backend.mail
 
+import beer.supportly.backend.database.entities.UserEntity
+import beer.supportly.backend.security.service.JwtService
+import org.apache.catalina.util.URLEncoder
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
+import java.util.*
 
 /**
  * Service to send emails to users.
@@ -12,8 +16,49 @@ import java.nio.charset.StandardCharsets
  */
 @Service
 class MailService(
-    private val javaMailSender: JavaMailSender
+    private val javaMailSender: JavaMailSender,
+    private val jwtService: JwtService
 ) {
+
+    /**
+     * Sends the forgot password email for a user.
+     *
+     * @param userEntity The user entity.
+     */
+    fun sendForgotPassword(userEntity: UserEntity) {
+        this.sendMail(
+            userEntity.email, "Reset your password!", this.getForgotPasswordTemplate(
+                userEntity.firstName,
+                userEntity.lastName,
+                jwtService.generateToken(
+                    mapOf("type" to "resetPassword"),
+                    userEntity,
+                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
+                ),
+                userEntity.email
+            )
+        )
+    }
+
+    /**
+     * Sends the email validation email for a user.
+     *
+     * @param userEntity The user entity.
+     */
+    fun sendEmailValidation(userEntity: UserEntity) {
+        this.sendMail(
+            userEntity.email, "Welcome to Supportly!", this.getValidateEmailTemplate(
+                userEntity.firstName,
+                userEntity.lastName,
+                jwtService.generateToken(
+                    mapOf("type" to "validateEmail"),
+                    userEntity,
+                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
+                ),
+                userEntity.email
+            )
+        )
+    }
 
     /**
      * Sends an email to the given email address.
@@ -40,11 +85,18 @@ class MailService(
      * @param firstName The first name of the user.
      * @param lastName The last name of the user.
      * @param token The token to validate the email.
+     * @param email The email of the user.
      *
      * @return The email template.
      */
-    fun getValidateEmailTemplate(firstName: String, lastName: String, token: String): String {
-        val verifyUrl = "http://localhost:8080/auth/validate-email?token=$token"
+    fun getValidateEmailTemplate(firstName: String, lastName: String, token: String, email: String): String {
+        val verifyUrl =
+            "http://localhost:4200/auth/validate-email/$token/${
+                URLEncoder.DEFAULT.encode(
+                    email,
+                    StandardCharsets.UTF_8
+                )
+            }"
         return this.getHtmlTemplate(
             firstName,
             lastName,
@@ -61,11 +113,18 @@ class MailService(
      * @param firstName The first name of the user.
      * @param lastName The last name of the user.
      * @param token The token to reset the password.
+     * @param email The email of the user.
      *
-     * @return The email template.
+     * @return The password template.
      */
-    fun getForgotPasswordTemplate(firstName: String, lastName: String, token: String): String {
-        val forgotUrl = "http://localhost:8080/auth/reset-password?token=$token"
+    fun getForgotPasswordTemplate(firstName: String, lastName: String, token: String, email: String): String {
+        val forgotUrl =
+            "http://localhost:4200/auth/reset-password/$token/${
+                URLEncoder.DEFAULT.encode(
+                    email,
+                    StandardCharsets.UTF_8
+                )
+            }"
         return this.getHtmlTemplate(
             firstName,
             lastName,

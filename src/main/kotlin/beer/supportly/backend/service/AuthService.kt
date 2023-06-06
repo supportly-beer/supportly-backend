@@ -1,14 +1,14 @@
 package beer.supportly.backend.service
 
 import beer.supportly.backend.database.repositories.UserRepository
-import beer.supportly.backend.dto.LoginDto
-import beer.supportly.backend.dto.OperationSuccessDto
-import beer.supportly.backend.dto.TokenDto
-import beer.supportly.backend.dto.TwofaDto
+import beer.supportly.backend.dto.*
 import beer.supportly.backend.exception.BackendException
 import beer.supportly.backend.exception.TwofaRequiredException
+import beer.supportly.backend.mail.MailService
 import beer.supportly.backend.security.service.JwtService
 import dev.turingcomplete.kotlinonetimepassword.GoogleAuthenticator
+import io.jsonwebtoken.ExpiredJwtException
+import jakarta.transaction.Transactional
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -26,10 +26,13 @@ import java.util.*
  * @see beer.supportly.backend.security.service.JwtService
  */
 @Service
+@Transactional
 class AuthService(
     private val userRepository: UserRepository,
     private val jwtService: JwtService,
-    private val authenticationManager: AuthenticationManager
+    private val authenticationManager: AuthenticationManager,
+    private val mailService: MailService,
+    private val userService: UserService
 ) {
 
     /**
@@ -113,5 +116,54 @@ class AuthService(
         )
 
         return TokenDto("success", accessToken)
+    }
+
+    /**
+     * Validates the email for a user.
+     *
+     * @param token The token.
+     */
+    fun validateEmail(token: String, email: String) {
+        val userEntity = userService.getOriginalUser(email).orElseThrow {
+            BackendException(HttpStatus.NOT_FOUND, "User not found!")
+        }
+
+        if (userEntity.emailVerified) {
+            throw BackendException(HttpStatus.OK, "Email already verified!")
+        }
+
+        try {
+            val isValid = jwtService.isTokenValid(token, userEntity)
+
+            if (isValid) {
+                userEntity.emailVerified = true
+            }
+        } catch (e: ExpiredJwtException) {
+            mailService.sendEmailValidation(userEntity)
+            throw BackendException(HttpStatus.BAD_REQUEST, "Yikes!")
+        }
+    }
+
+    /**
+     * Sends the forgot password email for a user.
+     *
+     * @param forgotPasswordDto The DTO containing the email.
+     *
+     * @throws BackendException If the user does not exist.
+     */
+    fun forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+        val userEntity = userRepository.findByEmail(forgotPasswordDto.email)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+
+        mailService.sendForgotPassword(userEntity)
+    }
+
+    /**
+     * Resets the password for a user.
+     *
+     * @param token The token.
+     */
+    fun resetPassword(token: String) {
+        TODO("Not yet implemented")
     }
 }

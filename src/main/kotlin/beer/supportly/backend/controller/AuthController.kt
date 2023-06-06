@@ -93,9 +93,10 @@ class AuthController(
      */
     @PostMapping("/validate-email")
     fun validateEmail(
-        @RequestParam(name = "token", required = true) token: String
+        @RequestParam("token") token: String,
+        @RequestParam("email") email: String
     ): ResponseEntity<OperationSuccessDto> {
-        userService.validateEmail(token)
+        authService.validateEmail(token, email)
         return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
 
@@ -111,7 +112,7 @@ class AuthController(
      */
     @PostMapping("/forgot-password")
     fun forgotPassword(@RequestBody forgotPasswordDto: ForgotPasswordDto): ResponseEntity<OperationSuccessDto> {
-        userService.forgotPassword(forgotPasswordDto)
+        authService.forgotPassword(forgotPasswordDto)
         return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
 
@@ -126,9 +127,9 @@ class AuthController(
      */
     @PostMapping("/reset-password")
     fun resetPassword(
-        @RequestParam(name = "token", required = true) token: String
+        @RequestHeader("Authorization") token: String,
     ): ResponseEntity<OperationSuccessDto> {
-        userService.resetPassword(token)
+        authService.resetPassword(token)
         return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
 }

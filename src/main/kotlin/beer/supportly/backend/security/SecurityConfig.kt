@@ -43,7 +43,7 @@ class SecurityConfig(
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity.csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/auth/login", "/auth/register")
+            .requestMatchers("/auth/login", "/auth/register", "/auth/forgot-password", "/auth/validate-email")
             .permitAll()
             .anyRequest()
             .authenticated()

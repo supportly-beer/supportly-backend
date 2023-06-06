@@ -32,6 +32,7 @@ class UserDtoMapper : Function<UserEntity, UserDto> {
             userEntity.lastName,
             userEntity.profilePictureUrl,
             userEntity.twofaEnabled,
+            userEntity.emailVerified,
             RoleDto(
                 userEntity.role.id!!,
                 userEntity.role.name

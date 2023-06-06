@@ -3,6 +3,7 @@ package beer.supportly.backend.security.filter
 import beer.supportly.backend.exception.BackendException
 import beer.supportly.backend.security.service.JwtService
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -80,7 +81,15 @@ class JwtAuthenticationFilter(
 
             filterChain.doFilter(httpServletRequest, httpServletResponse)
         } catch (e: MalformedJwtException) {
-            val backendException = BackendException(HttpStatus.UNAUTHORIZED, e.message.orEmpty())
+            val backendException = BackendException(HttpStatus.UNAUTHORIZED, "Invalid token")
+            httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()
+            httpServletResponse.writer.write(convertObjectToJson(backendException))
+        } catch (e: ExpiredJwtException) {
+            val backendException = BackendException(HttpStatus.UNAUTHORIZED, "Token expired")
+            httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()
+            httpServletResponse.writer.write(convertObjectToJson(backendException))
+        } catch (e: Exception) {
+            val backendException = BackendException(HttpStatus.UNAUTHORIZED, "General exception")
             httpServletResponse.status = HttpStatus.UNAUTHORIZED.value()
             httpServletResponse.writer.write(convertObjectToJson(backendException))
         }

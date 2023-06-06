@@ -105,7 +105,7 @@ class UserService(
         )
 
         this.saveUser(userEntity)
-        this.sendEmailValidation(userEntity)
+        mailService.sendEmailValidation(userEntity)
     }
 
     /**
@@ -141,6 +141,17 @@ class UserService(
      */
     fun getOriginalUser(userId: Long): Optional<UserEntity> {
         return userRepository.findById(userId)
+    }
+
+    /**
+     * Gets the original user entity by its email.
+     *
+     * @param email The email of the user.
+     *
+     * @return The user entity.
+     */
+    fun getOriginalUser(email: String): Optional<UserEntity> {
+        return userRepository.findByEmail(email)
     }
 
     /**
@@ -182,76 +193,6 @@ class UserService(
      */
     fun getUserCount(): Long {
         return userRepository.count()
-    }
-
-    /**
-     * Validates the email for a user.
-     *
-     * @param token The token.
-     */
-    fun validateEmail(token: String) {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Sends the forgot password email for a user.
-     *
-     * @param forgotPasswordDto The DTO containing the email.
-     *
-     * @throws BackendException If the user does not exist.
-     */
-    fun forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-        val userEntity = userRepository.findByEmail(forgotPasswordDto.email)
-            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
-
-        this.sendForgotPassword(userEntity)
-    }
-
-    /**
-     * Resets the password for a user.
-     *
-     * @param token The token.
-     */
-    fun resetPassword(token: String) {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Sends the forgot password email for a user.
-     *
-     * @param userEntity The user entity.
-     */
-    fun sendForgotPassword(userEntity: UserEntity) {
-        mailService.sendMail(
-            userEntity.email, "Reset your password!", mailService.getForgotPasswordTemplate(
-                userEntity.firstName,
-                userEntity.lastName,
-                jwtService.generateToken(
-                    mapOf("type" to "resetPassword"),
-                    userEntity,
-                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
-                )
-            )
-        )
-    }
-
-    /**
-     * Sends the email validation email for a user.
-     *
-     * @param userEntity The user entity.
-     */
-    fun sendEmailValidation(userEntity: UserEntity) {
-        mailService.sendMail(
-            userEntity.email, "Welcome to Supportly!", mailService.getValidateEmailTemplate(
-                userEntity.firstName,
-                userEntity.lastName,
-                jwtService.generateToken(
-                    mapOf("type" to "validateEmail"),
-                    userEntity,
-                    Date(System.currentTimeMillis() + (1000 * 60 * 10))
-                )
-            )
-        )
     }
 
     /**

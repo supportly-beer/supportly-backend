@@ -9,6 +9,7 @@ package beer.supportly.backend.dto
  * @property lastName The last name of the user.
  * @property profilePictureUrl The profile picture url of the user.
  * @property twofaEnabled The twofa enabled of the user.
+ * @property emailVerified The email verified of the user.
  * @property role The role of the user.
  *
  * @constructor constructor with all values
@@ -22,5 +23,6 @@ data class UserDto(
     val lastName: String,
     val profilePictureUrl: String,
     val twofaEnabled: Boolean,
+    val emailVerified: Boolean,
     val role: RoleDto
 )
