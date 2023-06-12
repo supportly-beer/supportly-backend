@@ -45,27 +45,6 @@ class TicketController(
     }
 
     /**
-     * Endpoint for statistics of a user
-     *
-     * @param token contains the token
-     * @param startDate contains the start date
-     * @param endDate contains the end date
-     *
-     * @return UserTicketStatisticsDto contains the statistics
-     *
-     * @see beer.supportly.backend.dto.UserTicketStatisticsDto
-     */
-    @GetMapping("/statistics/user")
-    @RolesAllowed("ROLE_ADMINISTRATOR", "ROLE_AGENT")
-    fun getUserStatistics(
-        @RequestHeader("Authorization") token: String,
-        @RequestParam(name = "startDate", required = false) startDate: Long,
-        @RequestParam(name = "endDate", required = false) endDate: Long
-    ): ResponseEntity<UserTicketStatisticsDto> {
-        return ResponseEntity.ok(ticketService.getUserStatistics(token.substring("Bearer ".length), startDate, endDate))
-    }
-
-    /**
      * Endpoint to get a ticket
      *
      * @param identifier contains the identifier

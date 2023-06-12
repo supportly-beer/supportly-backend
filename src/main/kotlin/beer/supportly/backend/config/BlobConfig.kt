@@ -4,12 +4,15 @@ import com.azure.storage.blob.BlobServiceClient
 import com.azure.storage.blob.BlobServiceClientBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 
 /**
  * Configuration for the blob storage
  */
 @Configuration
-class BlobConfig {
+class BlobConfig(
+    private val environment: Environment
+) {
 
     /**
      * Creates the blob client
@@ -20,7 +23,7 @@ class BlobConfig {
     fun blobClient(): BlobServiceClient {
         return BlobServiceClientBuilder()
             .endpoint("https://supportly.blob.core.windows.net/")
-            .connectionString("DefaultEndpointsProtocol=https;AccountName=supportly;AccountKey=t2bkD2q5Rha7IaGNNRs/Ueex1BG8JGq/wTruZSM91e6q5Wu2qaGfI0djppgXt5nqeMhWEAVDn2qE+AStSlbe1Q==;EndpointSuffix=core.windows.net")
+            .connectionString(environment.getProperty("SUPPORTLY_AZURE_CONNECTION_STRING"))
             .buildClient()
     }
 }

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import org.springframework.core.env.Environment
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -14,10 +15,9 @@ import java.util.*
  * Service for generating and validating JWT tokens.
  */
 @Service
-class JwtService {
-
-    private val secret =
-        "294A404E635266556A586E3272357538782F413F4428472D4B6150645367566B5970337336763979244226452948404D6251655468576D5A7134743777217A25"
+class JwtService(
+    private val environment: Environment
+) {
 
     /**
      * Checks if the token is valid for the given user.
@@ -116,7 +116,7 @@ class JwtService {
      * @return The signing key.
      */
     private fun getSigningKey(): Key {
-        val keyBuffer = Decoders.BASE64.decode(secret)
+        val keyBuffer = Decoders.BASE64.decode(environment.getProperty("SUPPORTLY_JWT_SECRET"))
         return Keys.hmacShaKeyFor(keyBuffer)
     }
 }

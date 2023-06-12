@@ -55,12 +55,12 @@ class TicketService(
      */
     fun getAgentStatistics(token: String, startDate: Long?, endDate: Long?): AgentTicketStatisticsDto {
         val userEntity = userService.getOriginalUserFromToken(token)
+        val customerAccounts = userService.getUserCount()
 
         if (startDate == null || endDate == null) {
             val globalTicketsOpen = ticketRepository.findAllByState(TicketState.OPEN).get().count()
             val yourTicketsOpen = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.OPEN).get().count()
-            val yourTicketsAssigned =
-                ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.ASSIGNED).get().count()
+            val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.ASSIGNED).get().count()
             val yourTicketsClosed = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.FINISHED).get()
 
             val averageResponseTime = yourTicketsClosed.stream()
@@ -70,31 +70,15 @@ class TicketService(
             return AgentTicketStatisticsDto(
                 globalTicketsOpen,
                 yourTicketsOpen + yourTicketsAssigned,
-                yourTicketsClosed.count(),
+                customerAccounts,
                 averageResponseTime.roundToLong()
             )
         }
 
-        val globalTicketsOpen =
-            ticketRepository.findAllByStateAndCreatedAtBetween(TicketState.OPEN, startDate, endDate).get().count()
-        val yourTicketsOpen = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(
-            userEntity,
-            TicketState.OPEN,
-            startDate,
-            endDate,
-        ).get().count()
-        val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(
-            userEntity,
-            TicketState.ASSIGNED,
-            startDate,
-            endDate,
-        ).get().count()
-        val yourTicketsClosed = ticketRepository.findAllByAssigneeAndStateAndClosedAtBetween(
-            userEntity,
-            TicketState.FINISHED,
-            startDate,
-            endDate
-        ).get()
+        val globalTicketsOpen = ticketRepository.findAllByStateAndCreatedAtBetween(TicketState.OPEN, startDate, endDate).get().count()
+        val yourTicketsOpen = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(userEntity, TicketState.OPEN, startDate, endDate).get().count()
+        val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(userEntity, TicketState.ASSIGNED, startDate, endDate).get().count()
+        val yourTicketsClosed = ticketRepository.findAllByAssigneeAndStateAndClosedAtBetween(userEntity, TicketState.FINISHED, startDate, endDate).get()
 
         var averageResponseTime = yourTicketsClosed.stream()
             .map { it.closedAt!! - it.createdAt }
@@ -107,71 +91,7 @@ class TicketService(
         return AgentTicketStatisticsDto(
             globalTicketsOpen,
             yourTicketsOpen + yourTicketsAssigned,
-            yourTicketsClosed.count(),
-            averageResponseTime.roundToLong()
-        )
-    }
-
-    /**
-     * This method is used to get the user statistics.
-     *
-     * @param token The token of the user creating the ticket.
-     * @param startDate The start date of the statistics.
-     * @param endDate The end date of the statistics.
-     *
-     * @return The user statistics.
-     */
-    fun getUserStatistics(token: String, startDate: Long?, endDate: Long?): UserTicketStatisticsDto {
-        val userEntity = userService.getOriginalUserFromToken(token)
-
-        if (startDate == null || endDate == null) {
-            val yourTicketsCreated = ticketRepository.findAllByCreator(userEntity).get().count()
-            val yourTicketsOpen = ticketRepository.findAllByCreatorAndState(userEntity, TicketState.OPEN).get().count()
-            val yourTicketsAssigned =
-                ticketRepository.findAllByCreatorAndState(userEntity, TicketState.ASSIGNED).get().count()
-            val yourTicketsClosed = ticketRepository.findAllByCreatorAndState(userEntity, TicketState.FINISHED).get()
-
-            val averageResponseTime = yourTicketsClosed.stream()
-                .map { it.closedAt!! - it.createdAt }
-                .collect(Collectors.toList()).average()
-
-            return UserTicketStatisticsDto(
-                yourTicketsCreated,
-                yourTicketsClosed.count(),
-                yourTicketsOpen + yourTicketsAssigned,
-                averageResponseTime.roundToLong()
-            )
-        }
-
-        val yourTicketsCreated =
-            ticketRepository.findAllByCreatorAndCreatedAtBetween(userEntity, startDate, endDate).get().count()
-        val yourTicketsClosed =
-            ticketRepository.findAllByCreatorAndClosedAtBetween(userEntity, startDate, endDate).get()
-        val yourTicketsOpen = ticketRepository.findAllByCreatorAndStateAndCreatedAtBetween(
-            userEntity,
-            TicketState.OPEN,
-            startDate,
-            endDate
-        ).get().count()
-        val yourTicketsAssigned = ticketRepository.findAllByCreatorAndStateAndCreatedAtBetween(
-            userEntity,
-            TicketState.ASSIGNED,
-            startDate,
-            endDate
-        ).get().count()
-
-        var averageResponseTime = yourTicketsClosed.stream()
-            .map { it.closedAt!! - it.createdAt }
-            .collect(Collectors.toList()).average()
-
-        if (averageResponseTime.isNaN()) {
-            averageResponseTime = -1.0
-        }
-
-        return UserTicketStatisticsDto(
-            yourTicketsCreated,
-            yourTicketsClosed.count(),
-            yourTicketsOpen + yourTicketsAssigned,
+            customerAccounts,
             averageResponseTime.roundToLong()
         )
     }

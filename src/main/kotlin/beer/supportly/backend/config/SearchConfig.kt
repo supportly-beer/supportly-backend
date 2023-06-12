@@ -4,12 +4,15 @@ import com.meilisearch.sdk.Client
 import com.meilisearch.sdk.Config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 
 /**
  * Configuration class for the search client
  */
 @Configuration
-class SearchConfig {
+class SearchConfig(
+    private val environment: Environment
+) {
 
     /**
      * Bean for the search client
@@ -18,6 +21,6 @@ class SearchConfig {
      */
     @Bean
     fun searchClient(): Client {
-        return Client(Config("http://localhost:7700", "GOChGlk8hDDaZCJ4MnzabhfhH2vJ_Pe18vUTU_wYiSI"))
+        return Client(Config("http://localhost:7700", environment.getProperty("SUPPORTLY_SEARCH_API_KEY")))
     }
 }
