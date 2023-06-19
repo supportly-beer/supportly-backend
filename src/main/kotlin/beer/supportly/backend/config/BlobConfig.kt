@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment
 
 /**
  * Configuration for the blob storage
+ *
+ * @property environment the environment variables
  */
 @Configuration
 class BlobConfig(

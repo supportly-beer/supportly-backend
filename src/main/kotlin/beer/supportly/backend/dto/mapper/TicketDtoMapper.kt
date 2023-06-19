@@ -20,6 +20,7 @@ class TicketDtoMapper(
      * Maps a TicketEntity to a TicketDto.
      *
      * @param ticketEntity the TicketEntity to map
+     *
      * @return TicketDto mapped from TicketEntity
      *
      * @see beer.supportly.backend.database.entities.TicketEntity

@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment
 
 /**
  * Configuration class for the search client
+ *
+ * @property environment the environment variables
  */
 @Configuration
 class SearchConfig(

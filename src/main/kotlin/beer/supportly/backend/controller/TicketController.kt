@@ -45,6 +45,19 @@ class TicketController(
     }
 
     /**
+     * Endpoint for ticket count
+     *
+     * @return TicketCountDto contains the count
+     *
+     * @see beer.supportly.backend.dto.TicketCountDto
+     */
+    @GetMapping("/count")
+    @RolesAllowed("ROLE_ADMINISTRATOR", "ROLE_AGENT")
+    fun getTicketCount(): ResponseEntity<TicketCountDto> {
+        return ResponseEntity.ok(ticketService.getTicketCount())
+    }
+
+    /**
      * Endpoint to get a ticket
      *
      * @param identifier contains the identifier

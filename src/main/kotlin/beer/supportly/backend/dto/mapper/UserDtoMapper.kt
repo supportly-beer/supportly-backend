@@ -19,6 +19,7 @@ class UserDtoMapper : Function<UserEntity, UserDto> {
      * Maps a UserEntity to a UserDto.
      *
      * @param userEntity the UserEntity to map
+     *
      * @return UserDto mapped from UserEntity
      *
      * @see beer.supportly.backend.database.entities.UserEntity

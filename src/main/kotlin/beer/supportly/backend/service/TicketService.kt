@@ -304,4 +304,15 @@ class TicketService(
             .map(searchResultMapper)
             .orElseThrow { BackendException(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while searching!") }
     }
+
+    /**
+     * This method is used to get the ticket count.
+     *
+     * @return The ticket count dto.
+     *
+     * @see beer.supportly.backend.dto.TicketCountDto
+     */
+    fun getTicketCount(): TicketCountDto {
+        return TicketCountDto(ticketRepository.count())
+    }
 }

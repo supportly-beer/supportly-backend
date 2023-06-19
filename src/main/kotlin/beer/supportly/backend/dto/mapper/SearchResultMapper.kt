@@ -18,6 +18,7 @@ class SearchResultMapper : Function<Searchable, SearchResultDto> {
      * Maps a Searchable to a SearchResultDto.
      *
      * @param searchable the Searchable to map
+     *
      * @return SearchResultDto mapped from Searchable
      *
      * @see beer.supportly.backend.dto.SearchResultDto
