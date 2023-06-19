@@ -60,7 +60,8 @@ class TicketService(
         if (startDate == null || endDate == null) {
             val globalTicketsOpen = ticketRepository.findAllByState(TicketState.OPEN).get().count()
             val yourTicketsOpen = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.OPEN).get().count()
-            val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.ASSIGNED).get().count()
+            val yourTicketsAssigned =
+                ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.ASSIGNED).get().count()
             val yourTicketsClosed = ticketRepository.findAllByAssigneeAndState(userEntity, TicketState.FINISHED).get()
 
             val averageResponseTime = yourTicketsClosed.stream()
@@ -75,10 +76,26 @@ class TicketService(
             )
         }
 
-        val globalTicketsOpen = ticketRepository.findAllByStateAndCreatedAtBetween(TicketState.OPEN, startDate, endDate).get().count()
-        val yourTicketsOpen = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(userEntity, TicketState.OPEN, startDate, endDate).get().count()
-        val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(userEntity, TicketState.ASSIGNED, startDate, endDate).get().count()
-        val yourTicketsClosed = ticketRepository.findAllByAssigneeAndStateAndClosedAtBetween(userEntity, TicketState.FINISHED, startDate, endDate).get()
+        val globalTicketsOpen =
+            ticketRepository.findAllByStateAndCreatedAtBetween(TicketState.OPEN, startDate, endDate).get().count()
+        val yourTicketsOpen = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(
+            userEntity,
+            TicketState.OPEN,
+            startDate,
+            endDate
+        ).get().count()
+        val yourTicketsAssigned = ticketRepository.findAllByAssigneeAndStateAndCreatedAtBetween(
+            userEntity,
+            TicketState.ASSIGNED,
+            startDate,
+            endDate
+        ).get().count()
+        val yourTicketsClosed = ticketRepository.findAllByAssigneeAndStateAndClosedAtBetween(
+            userEntity,
+            TicketState.FINISHED,
+            startDate,
+            endDate
+        ).get()
 
         var averageResponseTime = yourTicketsClosed.stream()
             .map { it.closedAt!! - it.createdAt }
@@ -253,8 +270,17 @@ class TicketService(
         val ticketEntity = ticketRepository.findByIdentifier(identifier)
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "Ticket not found") }
 
-        if (updateTicketDto.ticketState != null) ticketEntity.state = updateTicketDto.ticketState
+        if (updateTicketDto.ticketState != null) {
+            ticketEntity.state = updateTicketDto.ticketState
+
+            if (updateTicketDto.ticketState == TicketState.FINISHED) {
+                ticketEntity.closedAt = System.currentTimeMillis()
+            }
+        }
+
         if (updateTicketDto.ticketUrgency != null) ticketEntity.urgency = updateTicketDto.ticketUrgency
+
+        ticketEntity.updatedAt = System.currentTimeMillis()
     }
 
     /**

@@ -21,6 +21,11 @@ class SearchConfig(
      */
     @Bean
     fun searchClient(): Client {
-        return Client(Config("http://localhost:7700", environment.getProperty("SUPPORTLY_SEARCH_API_KEY")))
+        return Client(
+            Config(
+                environment.getProperty("SUPPORTLY_SEARCH_API_URL"),
+                environment.getProperty("MEILI_MASTER_KEY")
+            )
+        )
     }
 }

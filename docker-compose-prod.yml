@@ -3,12 +3,22 @@ services:
   supportly-backend:
     container_name: supportly-backend
     image: jerrybraun17/supportly-backend:latest
-    build:
-      context: .
     ports:
       - "8080:8080"
       - "9090:9090"
     restart: unless-stopped
+    environment:
+      - SUPPORTLY_MAIL_USERNAME
+      - SUPPORTLY_MAIL_PASSWORD
+      - SUPPORTLY_MYSQL_URL
+      - SUPPORTLY_MYSQL_USER
+      - SUPPORTLY_MYSQL_PASSWORD
+      - SUPPORTLY_AZURE_CONNECTION_STRING
+      - MEILI_MASTER_KEY
+      - SUPPORTLY_JWT_SECRET
+      - SUPPORTLY_SEARCH_API_URL
+      - SUPPORTLY_FRONTEND_URL
+      - SUPPORTLY_CORS
     networks:
       - supportly_network
 
@@ -16,11 +26,9 @@ services:
     container_name: meilisearch
     image: getmeili/meilisearch:v1.2.0-rc.4
     environment:
-      - MEILI_MASTER_KEY=GOChGlk8hDDaZCJ4MnzabhfhH2vJ_Pe18vUTU_wYiSI
-    ports:
-      - "7700:7700"
+      - MEILI_MASTER_KEY
     volumes:
-      - ./data/meili_data:/meili_data
+      - ./meili_data:/meili_data
     restart: unless-stopped
     networks:
       - supportly_network

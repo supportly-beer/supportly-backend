@@ -13,7 +13,7 @@ services:
     container_name: meilisearch
     image: getmeili/meilisearch:v1.2.0-rc.4
     environment:
-      - MEILI_MASTER_KEY=GOChGlk8hDDaZCJ4MnzabhfhH2vJ_Pe18vUTU_wYiSI
+      - MEILI_MASTER_KEY
     ports:
       - "7700:7700"
     volumes:

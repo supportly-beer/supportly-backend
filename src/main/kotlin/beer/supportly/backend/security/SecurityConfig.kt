@@ -3,6 +3,7 @@ package beer.supportly.backend.security
 import beer.supportly.backend.security.filter.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -29,7 +30,8 @@ import org.springframework.web.filter.CorsFilter
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val authenticationProvider: AuthenticationProvider
+    private val authenticationProvider: AuthenticationProvider,
+    private val environment: Environment
 ) {
 
     /**
@@ -54,7 +56,7 @@ class SecurityConfig(
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .addFilterBefore(
-                CorsFilter(corsConfigurationSource("http://localhost:4200")),
+                CorsFilter(corsConfigurationSource()),
                 AbstractPreAuthenticatedProcessingFilter::class.java
             )
 
@@ -68,10 +70,10 @@ class SecurityConfig(
      *
      * @return The CORS configuration source.
      */
-    private fun corsConfigurationSource(corsOrigin: String): CorsConfigurationSource {
+    private fun corsConfigurationSource(): CorsConfigurationSource {
         val corsConfiguration = CorsConfiguration()
 
-        corsConfiguration.allowedOrigins = listOf(corsOrigin)
+        corsConfiguration.allowedOrigins = listOf(environment.getProperty("SUPPORTLY_CORS"))
         corsConfiguration.allowedMethods = listOf("GET", "POST", "HEAD", "OPTIONS", "PUT", "PATCH", "DELETE")
         corsConfiguration.maxAge = 10L
         corsConfiguration.allowCredentials = true

@@ -37,8 +37,8 @@ data class TicketEntity(
     val title: String,
     val description: String,
     val createdAt: Long,
-    val closedAt: Long? = null,
-    val updatedAt: Long? = null,
+    var closedAt: Long? = null,
+    var updatedAt: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(

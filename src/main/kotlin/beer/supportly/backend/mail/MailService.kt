@@ -3,6 +3,7 @@ package beer.supportly.backend.mail
 import beer.supportly.backend.database.entities.UserEntity
 import beer.supportly.backend.security.service.JwtService
 import org.apache.catalina.util.URLEncoder
+import org.springframework.core.env.Environment
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
@@ -17,7 +18,8 @@ import java.util.*
 @Service
 class MailService(
     private val javaMailSender: JavaMailSender,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val environment: Environment
 ) {
 
     /**
@@ -91,7 +93,7 @@ class MailService(
      */
     fun getValidateEmailTemplate(firstName: String, lastName: String, token: String, email: String): String {
         val verifyUrl =
-            "http://localhost:4200/auth/validate-email/$token/${
+            "${environment.getProperty("SUPPORTLY_FRONTEND_URL")}/auth/validate-email/$token/${
                 URLEncoder.DEFAULT.encode(
                     email,
                     StandardCharsets.UTF_8
@@ -119,7 +121,7 @@ class MailService(
      */
     fun getForgotPasswordTemplate(firstName: String, lastName: String, token: String, email: String): String {
         val forgotUrl =
-            "http://localhost:4200/auth/reset-password/$token/${
+            "${environment.getProperty("SUPPORTLY_FRONTEND_URL")}/auth/reset-password/$token/${
                 URLEncoder.DEFAULT.encode(
                     email,
                     StandardCharsets.UTF_8
