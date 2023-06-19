@@ -2,8 +2,8 @@
 GET {{apiUrl}}/ticket/statistics/agent?startDate=0&endDate=99999999999999
 Authorization: Bearer {{token}}
 
-### Get all statistics from user
-GET {{apiUrl}}/ticket/statistics/user?startDate=0&endDate=99999999999999
+### Get count of tickets
+GET {{apiUrl}}/ticket/count
 Authorization: Bearer {{token}}
 
 ### Get a ticket

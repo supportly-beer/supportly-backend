@@ -1,0 +1,15 @@
+### Get a faq entry
+GET {{apiUrl}}/faq/1
+
+### Get all faq entries
+GET {{apiUrl}}/faq
+
+### Create a faq entry
+POST {{apiUrl}}/faq
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "What is the meaning of life?",
+  "text": "42"
+}
