@@ -6,6 +6,7 @@ import beer.supportly.backend.service.UserService
 import beer.supportly.chat.ChatServiceGrpc
 import beer.supportly.chat.TicketChat
 import com.google.protobuf.Empty
+import io.grpc.Context
 import io.grpc.stub.StreamObserver
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -88,7 +89,15 @@ class ChatServiceImpl(
                 it.value.onNext(chatMessage)
             }
 
-            ticketService.addMessage(ticketEntity.get(), userEntity.get(), chatMessage.timestamp, chatMessage.message)
+            val contextFork = Context.current().fork()
+            contextFork.run {
+                ticketService.addMessage(
+                    ticketEntity.get(),
+                    userEntity.get(),
+                    chatMessage.timestamp,
+                    chatMessage.message
+                )
+            }
         }
 
         responseObserver.onNext(Empty.newBuilder().build())

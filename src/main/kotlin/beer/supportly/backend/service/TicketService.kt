@@ -171,8 +171,10 @@ class TicketService(
      *
      * @param token The token of the user creating the ticket.
      * @param createTicketDto The create ticket dto.
+     *
+     * @return The created ticket dto.
      */
-    fun createTicket(token: String, createTicketDto: CreateTicketDto) {
+    fun createTicket(token: String, createTicketDto: CreateTicketDto): CreatedTicketDto {
         val creator = userService.getOriginalUserFromToken(token)
         val ticketCount = ticketRepository.count()
 
@@ -200,6 +202,8 @@ class TicketService(
 
         val index = searchClient.index("tickets")
         index.addDocuments(json)
+
+        return CreatedTicketDto(ticketEntity.identifier)
     }
 
     /**

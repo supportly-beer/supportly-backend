@@ -20,8 +20,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "title": "Zerwas",
-  "description": "Jo eicha System funktioniert ned richtig, des is kompletter müll!"
+  "title": "Stream Problem",
+  "description": "Hallo, leider muss ich Ihnen mitteilen, dass ich derzeit viele Probleme mit dem gRPC-Stream in meinem TicketSystem habe. Haben Sie eine Idee woran das liegen könnte? Bei anderen Kollegen funktioniert alles einwandfrei."
 }
 
 ### Assign Ticket to Agent

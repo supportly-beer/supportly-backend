@@ -106,9 +106,8 @@ class TicketController(
     fun createTicket(
         @RequestHeader("Authorization") token: String,
         @RequestBody createTicketDto: CreateTicketDto
-    ): ResponseEntity<OperationSuccessDto> {
-        ticketService.createTicket(token.substring("Bearer ".length), createTicketDto)
-        return ResponseEntity.ok(OperationSuccessDto(true, null))
+    ): ResponseEntity<CreatedTicketDto> {
+        return ResponseEntity.ok(ticketService.createTicket(token.substring("Bearer ".length), createTicketDto))
     }
 
     /**
