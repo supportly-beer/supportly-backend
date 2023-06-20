@@ -22,6 +22,7 @@ data class TicketMessageEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
+    @Column(length = 65535)
     val content: String,
     val timestamp: Long,
 

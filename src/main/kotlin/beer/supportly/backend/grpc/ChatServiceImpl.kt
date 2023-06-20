@@ -48,6 +48,7 @@ class ChatServiceImpl(
                             .setRoomId(joinRoomRequest.roomId)
                             .setSenderId(it.sender.id!!)
                             .setSenderDisplayName(it.sender.firstName + " " + it.sender.lastName)
+                            .setSenderProfilePictureUrl(it.sender.profilePictureUrl)
                             .setMessage(it.content)
                             .setTimestamp(it.timestamp)
                             .build()

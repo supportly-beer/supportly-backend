@@ -2,7 +2,7 @@
 GRPC localhost:9090/beer.supportly.chat.ChatService/JoinChatRoom
 
 {
-  "roomId": "TICKET-1",
+  "roomId": "TICKET-2",
   "userId": "1"
 }
 
@@ -10,7 +10,7 @@ GRPC localhost:9090/beer.supportly.chat.ChatService/JoinChatRoom
 GRPC localhost:9090/beer.supportly.chat.ChatService/SendMessage
 
 {
-  "roomId": "TICKET-1",
+  "roomId": "TICKET-2",
   "senderId": "1",
   "senderDisplayName": "Jerro",
   "message": "Hello World",
