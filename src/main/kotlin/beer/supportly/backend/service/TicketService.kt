@@ -258,6 +258,7 @@ class TicketService(
             .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "Ticket not found") }
 
         ticketEntity.assignee = userEntity
+        ticketEntity.updatedAt = System.currentTimeMillis()
     }
 
     /**
