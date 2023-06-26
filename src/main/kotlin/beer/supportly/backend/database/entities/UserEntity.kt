@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails
  * @constructor constructor with no values where default values are set
  * @constructor constructor with only required values
  *
- * @see RoleEntity
+ * @see beer.supportly.backend.database.entities.RoleEntity
  */
 @Entity
 data class UserEntity(
@@ -34,7 +34,7 @@ data class UserEntity(
     val email: String,
     var firstName: String,
     var lastName: String,
-    val userPassword: String,
+    var userPassword: String,
     var profilePictureUrl: String,
 
     var twofaCode: String,
@@ -47,7 +47,7 @@ data class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    val role: RoleEntity
+    var role: RoleEntity
 ) : UserDetails {
     constructor() : this(null, "", "", "", "", "", "", false, false, RoleEntity())
     constructor(

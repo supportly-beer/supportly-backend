@@ -13,12 +13,14 @@ import com.azure.storage.blob.BlobServiceClient
 import com.azure.storage.blob.options.BlobParallelUploadOptions
 import dev.turingcomplete.kotlinonetimepassword.GoogleAuthenticator
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.Duration
 import java.util.*
+import java.util.stream.Collectors
 
 /**
  * Service for handling user related operations.
@@ -256,5 +258,38 @@ class UserService(
 
         if (updateUserDto.firstName != null) userEntity.firstName = updateUserDto.firstName
         if (updateUserDto.lastName != null) userEntity.lastName = updateUserDto.lastName
+        if (updateUserDto.password != null) userEntity.userPassword = passwordEncoder.encode(updateUserDto.password)
+    }
+
+    /**
+     * Update a user's role
+     *
+     * @param updateRoleDto The DTO containing the user data.
+     *
+     * @throws BackendException If the user does not exist.
+     * @throws BackendException If the role does not exist.
+     */
+    fun updateRole(updateRoleDto: UpdateRoleDto) {
+        val userEntity = this.getOriginalUser(updateRoleDto.userId)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "User not found!") }
+
+        val role = roleRepository.findByName(updateRoleDto.role)
+            .orElseThrow { BackendException(HttpStatus.NOT_FOUND, "Role not found!") }
+
+        userEntity.role = role
+    }
+
+    /**
+     * Gets all users.
+     *
+     * @param start The start page.
+     * @param limit The limit.
+     *
+     * @return The DTOs containing the user data.
+     */
+    fun getAllUsers(start: Int, limit: Int): List<UserDto> {
+        return userRepository.findAll(PageRequest.of(start, limit)).stream()
+            .map(userDtoMapper)
+            .collect(Collectors.toList())
     }
 }

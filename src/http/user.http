@@ -8,3 +8,7 @@ GET {{apiUrl}}/user/2
 ### Generate QR Code for Two Factor
 POST {{apiUrl}}/user/enableTwofa
 Authorization: Bearer {{token}}
+
+### Disable two factor
+POST {{apiUrl}}/user/disableTwofa
+Authorization: Bearer {{token}}

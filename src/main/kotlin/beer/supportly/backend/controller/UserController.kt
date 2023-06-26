@@ -137,4 +137,40 @@ class UserController(
         userService.updateUser(token.substring("Bearer ".length), updateUserDto)
         return ResponseEntity.ok(OperationSuccessDto(true, null))
     }
+
+    /**
+     * Endpoint to update the role of a user
+     *
+     * @param updateRoleDto contains the data of the user
+     *
+     * @return OperationSuccessDto contains the operation success
+     *
+     * @throws beer.supportly.backend.exception.BackendException if the user is not found or the role is not found
+     *
+     * @see beer.supportly.backend.dto.OperationSuccessDto
+     */
+    @PostMapping("/updateRole")
+    @RolesAllowed("ROLE_ADMINISTRATOR")
+    fun updateRole(
+        @RequestBody updateRoleDto: UpdateRoleDto
+    ): ResponseEntity<OperationSuccessDto> {
+        userService.updateRole(updateRoleDto)
+        return ResponseEntity.ok(OperationSuccessDto(true, null))
+    }
+
+    /**
+     * Endpoint to get all users
+     *
+     * @return List<UserDto> contains the data of the users
+     *
+     * @see beer.supportly.backend.dto.UserDto
+     */
+    @GetMapping("/all")
+    @RolesAllowed("ROLE_ADMINISTRATOR")
+    fun getAllUsers(
+        @RequestParam(name = "start", required = true) start: Int,
+        @RequestParam(name = "limit", required = true) limit: Int
+    ): ResponseEntity<List<UserDto>> {
+        return ResponseEntity.ok(userService.getAllUsers(start, limit))
+    }
 }

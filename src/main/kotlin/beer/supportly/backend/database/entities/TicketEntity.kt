@@ -22,10 +22,10 @@ import jakarta.persistence.*
  * @constructor constructor with no values where default values are set
  * @constructor constructor with only required values
  *
- * @see UserEntity
- * @see TicketState
- * @see TicketUrgency
- * @see TicketMessageEntity
+ * @see beer.supportly.backend.database.entities.UserEntity
+ * @see beer.supportly.backend.database.entities.TicketState
+ * @see beer.supportly.backend.database.entities.TicketUrgency
+ * @see beer.supportly.backend.database.entities.TicketMessageEntity
  */
 @Entity
 data class TicketEntity(
